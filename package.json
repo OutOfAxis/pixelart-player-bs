@@ -1,0 +1,23 @@
+{
+  "name": "pixelart-player-bs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OutOfAxis/pixelart-player-bs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OutOfAxis/pixelart-player-bs/issues"
+  },
+  "homepage": "https://github.com/OutOfAxis/pixelart-player-bs#readme",
+  "devDependencies": {
+    "express": "^4.16.2",
+    "sockjs": "^0.3.19"
+  }
+}
