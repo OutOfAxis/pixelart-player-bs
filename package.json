@@ -17,7 +17,15 @@
   },
   "homepage": "https://github.com/OutOfAxis/pixelart-player-bs#readme",
   "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^3.19.0",
+    "eslint-plugin-promise": "^3.5.0",
     "express": "^4.16.2",
-    "sockjs": "^0.3.19"
-  }
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "sockjs-client": "^1.1.4",
+    "uuid-v4": "^0.1.0",
+    "websocket": "^1.0.25"
+  },
+  "dependencies": {}
 }
