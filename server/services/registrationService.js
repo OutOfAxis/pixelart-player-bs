@@ -1,5 +1,6 @@
 const requestPromise = require('request-promise');
 const uuid = require('uuid-v4');
+const configurationService = require('./configurationService');
 
 const API_URL = 'http://b.pixelart.ge:5300/api/1/player/register/';
 
@@ -27,6 +28,7 @@ async function sendVerificationMessage(token) {
   try {
     const response = JSON.parse(await requestPromise(options));
     console.log(response);
+    configurationService.initializeConfigurationAndDatabase(response);
   } catch (error) {
     console.log(error);
   }

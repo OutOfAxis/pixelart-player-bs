@@ -1,3 +1,5 @@
 const service = require('./server/services/registrationService');
+const configurationService = require('./server/services/configurationService');
 
-service.sendVerificationMessage();
+configurationService.initializeConfigurationAndDatabase();
+// service.sendVerificationMessage();
