@@ -2,7 +2,8 @@ const requestPromise = require('request-promise');
 const uuid = require('uuid-v4');
 const configurationService = require('./configurationService');
 
-const API_URL = 'http://b.pixelart.ge:5300/api/1/player/register/';
+const API_URL = 'http://b.pixelart.ge:5300';
+const REST_URL = '/api/1/player/register/';
 
 function linkDeviceWithUniversallyUniqueIdentifier(identifier) {
     // TODO: SAVE UUID to local file or local DB
@@ -18,7 +19,7 @@ async function sendVerificationMessage(token) {
 
   const options = {
     method: 'PUT',
-    uri: API_URL + token,
+    uri: API_URL + REST_URL + token,
     formData: {
       secret: getAndSetUniversallyUniqueIdentifier()
     },
@@ -34,6 +35,8 @@ async function sendVerificationMessage(token) {
   }
 }
 
+
 module.exports = {
-  sendVerificationMessage
+  API_URL,
+  sendVerificationMessage,
 };

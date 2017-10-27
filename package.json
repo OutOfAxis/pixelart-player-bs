@@ -18,6 +18,7 @@
   "homepage": "https://github.com/OutOfAxis/pixelart-player-bs#readme",
   "devDependencies": {
     "babel-eslint": "^7.2.3",
+    "base-64": "^0.1.0",
     "eslint": "^3.19.0",
     "eslint-plugin-promise": "^3.5.0",
     "express": "^4.16.2",
@@ -30,5 +31,7 @@
     "uuid-v4": "^0.1.0",
     "websocket": "^1.0.25"
   },
-  "dependencies": {}
+  "dependencies": {
+    "utf8": "^2.1.2"
+  }
 }

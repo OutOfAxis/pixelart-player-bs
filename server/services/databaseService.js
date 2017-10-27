@@ -1,8 +1,11 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const dbPath = path.resolve(__dirname, 'BrightPixel.db');
-const createConfigurationQuery = 'CREATE TABLE IF NOT EXISTS Configuration (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, key TEXT, value TEXT)';
-const getConfigurationQuery = '';
+const createConfigurationQuery =
+  'CREATE TABLE IF NOT EXISTS Configuration (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, key TEXT, value TEXT)';
+const getConfigurationQuery =
+  'SELECT value FROM Configuration WHERE key = \'Configuration\'';
+
 function initializeConnectionWithDataBase() {
   const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
@@ -25,12 +28,22 @@ function initializeConfigurationDataSet(response) {
   db.run(insertQuery);
   db.close();
 }
-async function getConfiguration(){
+
+function getConfiguration() {
   const db = initializeConnectionWithDataBase();
-  const result = JSON.parse(await db.run(getConfigurationQuery));
-  db.close();
-  return result;
+
+  return new Promise((resolve, reject) => {
+    db.all(getConfigurationQuery, function(error, rows) {
+      if (error) {
+        reject(error);
+      }
+      db.close();
+      resolve(JSON.parse(rows[0].value));
+    });
+  });
 }
+
 module.exports = {
-  initializeConfigurationDataSet
+  initializeConfigurationDataSet,
+  getConfiguration,
 };
