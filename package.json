@@ -25,11 +25,13 @@
     "path": "^0.12.7",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
+    "socket.io-client": "^2.0.4",
     "sockjs-client": "^1.1.4",
     "sqlite": "^2.8.0",
     "sqlite3": "^3.1.13",
     "uuid-v4": "^0.1.0",
-    "websocket": "^1.0.25"
+    "websocket": "^1.0.25",
+    "ws": "^3.2.0"
   },
   "dependencies": {
     "utf8": "^2.1.2"

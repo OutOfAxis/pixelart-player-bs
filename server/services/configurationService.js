@@ -8,7 +8,7 @@ function getConfigurationFromDatabase() {
   return databaseService.getConfiguration();
 }
 
-function getUserAndPasswordFromConfiguration(done){
+function getUserAndPasswordFromConfiguration(){
   return getConfigurationFromDatabase()
     .then((config) => {
       return {

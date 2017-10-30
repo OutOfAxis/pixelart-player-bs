@@ -11,7 +11,8 @@ function initializeConnectionWithDataBase() {
     if (err) {
       console.error(err.message);
     }
-    console.log('Connected to the chinook database.');
+    console.log('Connected to the BrightPixel database.');
+    db.run(createConfigurationQuery);
   });
   return db;
 }
@@ -23,7 +24,6 @@ function prepareInsertConfigurationQuery(response) {
 
 function initializeConfigurationDataSet(response) {
   const db = initializeConnectionWithDataBase();
-  db.run(createConfigurationQuery);
   const insertQuery = prepareInsertConfigurationQuery(response);
   db.run(insertQuery);
   db.close();
