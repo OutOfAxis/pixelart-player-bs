@@ -15,7 +15,7 @@ function getAndSetUniversallyUniqueIdentifier() {
 }
 
 async function sendVerificationMessage(token) {
-  token = '247e477';
+  token = '4e0f4af';
 
   const options = {
     method: 'PUT',

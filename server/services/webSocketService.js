@@ -11,10 +11,9 @@ function establishConnectionWithWebSocket() {
       const ws = new WebSocket(url, {
         perMessageDeflate: false,
         headers: {
-          Authorization: `Basic ${encryptionService.encode(userpass)}=`
+          Authorization: `Basic ${encryptionService.encode(userpass)}`
         }
       });
-      
       ws.on('open', function open() {
         console.log('connected');
       });
