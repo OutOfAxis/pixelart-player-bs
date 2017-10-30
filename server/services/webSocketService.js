@@ -31,9 +31,12 @@ function establishConnectionWithWebSocket() {
     // });
       const userpass = `${config.user}:${config.password}`;
       const socket = io.connect(url, {
-        reconnect: true,
-        extraHeaders: {
-          Authorization: `Basic ${encryptionService.encode(userpass)}`
+        transportOptions: {
+          polling: {
+            extraHeaders: {
+              Authorization: `Basic ${encryptionService.encode(userpass)}`
+            }
+          }
         }
       });
 
