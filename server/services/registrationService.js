@@ -15,7 +15,7 @@ function getAndSetUniversallyUniqueIdentifier() {
 }
 
 async function sendVerificationMessage(token) {
-  token = '4e0f4af';
+  token = '5253bf2';
 
   const options = {
     method: 'PUT',
@@ -27,9 +27,7 @@ async function sendVerificationMessage(token) {
   };
 
   try {
-    console.log(options.uri);
     const response = JSON.parse(await requestPromise(options));
-    console.log(response);
     configurationService.initializeConfigurationAndDatabase(response);
   } catch (error) {
     console.log(error);

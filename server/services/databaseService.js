@@ -1,6 +1,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const dbPath = path.resolve(__dirname, 'BrightPixel.db');
+const encryptionService = require('./encryptionService');
 const createConfigurationQuery =
   'CREATE TABLE IF NOT EXISTS Configuration (id INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, key TEXT, value TEXT)';
 const getConfigurationQuery =
@@ -12,14 +13,14 @@ function initializeConnectionWithDataBase() {
       console.error(err.message);
     }
     console.log('Connected to the BrightPixel database.');
-    db.run(createConfigurationQuery);
   });
+  db.run(createConfigurationQuery);
   return db;
 }
 
 function prepareInsertConfigurationQuery(response) {
   return (`${'INSERT INTO Configuration(type, key, value) VALUES(\'JSON\', \'Configuration\', '}
-    ${'\''}${JSON.stringify(response)}${'\' )'}`);
+    ${'\''}${encryptionService.encode(JSON.stringify(response))}${'\' )'}`);
 }
 
 function initializeConfigurationDataSet(response) {
@@ -38,7 +39,7 @@ function getConfiguration() {
         reject(error);
       }
       db.close();
-      resolve(JSON.parse(rows[0].value));
+      resolve(JSON.parse(encryptionService.decode(rows[0].value)));
     });
   });
 }

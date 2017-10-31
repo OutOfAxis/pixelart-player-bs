@@ -15,7 +15,7 @@ function establishConnectionWithWebSocket() {
         }
       });
       ws.on('open', function open() {
-        console.log('connected');
+        console.log('Connection to WebSocket has been established.');
       });
     });
 }
