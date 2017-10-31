@@ -120,3 +120,6 @@ bld/
 
 # typings
 typings/
+
+# Database
+*.db
