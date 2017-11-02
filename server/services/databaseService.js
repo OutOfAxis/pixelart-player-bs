@@ -33,7 +33,7 @@ function closeDatabaseConnection(dbContext) {
 function initializeConnectionWithDataBase() {
   const db = new sqlite3.Database(dbPath);
 
-  return runPromifisiedQuery(db, queries.createConfigurationQuery)
+  return runPromifisiedQuery(db, queries.QUERY_CREATE_CONFIGURATION)
     .then(() => db);
 }
 
@@ -52,11 +52,11 @@ function executeQuery(query) {
 
 function prepareInsertConfigurationQuery(response) {
   const encodedConfiguration = encryption.encode(JSON.stringify(response));
-  return (`${queries.insertConfigurationQuery }'${encodedConfiguration}' )`);
+  return (`${queries.QUERY_INSERT_CONFIGURATION }'${encodedConfiguration}' )`);
 }
 
 function initializeDeviceIdentifier(identifier) {
-  const query = `${queries.insertIdentifierQuery }'${identifier}' )`;
+  const query = `${queries.QUERY_INSERT_IDENTIFIER }'${identifier}' )`;
 
   return executeQuery(query);
 }
@@ -68,14 +68,14 @@ function insertConfiguration(response) {
 }
 
 function getConfiguration() {
-  return executeQuery(queries.getConfigurationQuery)
+  return executeQuery(queries.QUERY_GET_CONFIGURATION)
     .then((rows) => {
       return JSON.parse(encryption.decode(rows[0].value));
     });
 }
 
 function getDeviceIdentifier() {
-  return executeQuery(queries.getIdentifierQuery);
+  return executeQuery(queries.QUERY_GET_IDENTIFIER);
 }
 
 module.exports = {
