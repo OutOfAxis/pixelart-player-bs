@@ -12,8 +12,8 @@ function establishConnectionWithWebSocket() {
       const ws = new WebSocket(url, {
         perMessageDeflate: false,
         headers: {
-          Authorization: `Basic ${encryption.encode(authorizationToken)}`
-        }
+          Authorization: `Basic ${encryption.encode(authorizationToken)}`,
+        },
       });
       ws.on('open', function open() {
         console.log('Connection to WebSocket has been established.');
@@ -22,5 +22,5 @@ function establishConnectionWithWebSocket() {
 }
 
 module.exports = {
-  establishConnectionWithWebSocket
+  establishConnectionWithWebSocket,
 };

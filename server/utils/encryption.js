@@ -13,6 +13,6 @@ function decode(phrase) {
 
 module.exports = {
   encode,
-  decode
+  decode,
 };
 

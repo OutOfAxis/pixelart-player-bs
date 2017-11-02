@@ -5,44 +5,82 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const dbPath = path.resolve(__dirname, 'BrightPixel.db');
 
-function initializeConnectionWithDataBase() {
-  const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    console.log('Connected to the BrightPixel database.');
-  });
-  db.run(queries.createConfigurationQuery);
-  return db;
-}
-
-function prepareInsertConfigurationQuery(response) {
-  return (`${queries.insertQuery}
-    ${'\''}${encryption.encode(JSON.stringify(response))}${'\' )'}`);
-}
-
-function initializeConfigurationDataSet(response) {
-  const db = initializeConnectionWithDataBase();
-  const insertQuery = prepareInsertConfigurationQuery(response);
-  db.run(insertQuery);
-  db.close();
-}
-
-function getConfiguration() {
-  const db = initializeConnectionWithDataBase();
-
+function runPromifisiedQuery(dbContext, query) {
   return new Promise((resolve, reject) => {
-    db.all(queries.getConfigurationQuery, function(error, rows) {
+    dbContext.all(query, function(error, rows) {
       if (error) {
         reject(error);
+        return error;
       }
-      db.close();
-      resolve(JSON.parse(encryption.decode(rows[0].value)));
+      resolve(rows);
+      return rows;
     });
   });
 }
 
+function closeDatabaseConnection(dbContext) {
+  return new Promise((resolve, reject) => {
+    dbContext.close(function(error) {
+      if (error) {
+        console.error(error);
+        reject(error);
+      }
+      resolve();
+    });
+  });
+}
+
+function initializeConnectionWithDataBase() {
+  const db = new sqlite3.Database(dbPath);
+
+  return runPromifisiedQuery(db, queries.createConfigurationQuery)
+    .then(() => db);
+}
+
+function executeQuery(query) {
+  return initializeConnectionWithDataBase()
+    .then((db) => {
+      return Promise.all([db, runPromifisiedQuery(db, query)]);
+    })
+    .then((array) => {
+      const db = array[0];
+      const result = array[1];
+      return Promise.all([result, closeDatabaseConnection(db)]);
+    })
+    .then((array) => array[0]);
+}
+
+function prepareInsertConfigurationQuery(response) {
+  const encodedConfiguration = encryption.encode(JSON.stringify(response));
+  return (`${queries.insertConfigurationQuery }'${encodedConfiguration}' )`);
+}
+
+function initializeDeviceIdentifier(identifier) {
+  const query = `${queries.insertIdentifierQuery }'${identifier}' )`;
+
+  return executeQuery(query);
+}
+
+function insertConfiguration(response) {
+  const insertQuery = prepareInsertConfigurationQuery(response);
+
+  return executeQuery(insertQuery);
+}
+
+function getConfiguration() {
+  return executeQuery(queries.getConfigurationQuery)
+    .then((rows) => {
+      return JSON.parse(encryption.decode(rows[0].value));
+    });
+}
+
+function getDeviceIdentifier() {
+  return executeQuery(queries.getIdentifierQuery);
+}
+
 module.exports = {
-  initializeConfigurationDataSet,
+  insertConfiguration,
+  initializeDeviceIdentifier,
   getConfiguration,
+  getDeviceIdentifier,
 };

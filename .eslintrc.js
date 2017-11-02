@@ -19,7 +19,13 @@ module.exports = {
     },
     'rules': {
         /* Possible Errors */
-        'comma-dangle': 0,
+        "comma-dangle": ["error", {
+            "arrays": "never",
+            "objects": "always-multiline",
+            "imports": "never",
+            "exports": "always-multiline",
+            "functions": "ignore"
+        }],
         // 'no-cond-assign': [2, 'except-parens'], // disallow assignment operators in conditional expressions
         'no-console': 0,
         'no-constant-condition': 2,
@@ -53,7 +59,7 @@ module.exports = {
         'accessor-pairs': 0,
         'block-scoped-var': 0, // see Babel section
         'complexity': 0,
-        'consistent-return': 2,
+        'consistent-return': 1,
         'curly': [2, 'all'],
         'default-case': 0,
         'dot-notation': [2, { 'allowKeywords': true, 'allowPattern': '' }],

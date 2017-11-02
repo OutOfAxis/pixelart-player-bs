@@ -4,40 +4,45 @@ const co = require('co');
 const requestPromise = require('request-promise');
 const uuid = require('uuid-v4');
 
-
-function linkDeviceWithUniversallyUniqueIdentifier(identifier) {
-  // TODO: SAVE UUID to local file or local DB
-}
-
 function getAndSetUniversallyUniqueIdentifier() {
   const identifier = uuid();
-  linkDeviceWithUniversallyUniqueIdentifier(identifier);
+  databaseService.initializeDeviceIdentifier(identifier);
   return identifier;
 }
 
 function sendVerificationMessage(token) {
   return co(function* () {
-    token = '5253bf2';
+    token = '47b129c';
 
     const options = {
       method: 'PUT',
       uri: `${communication.REST_API_URL}${token}`,
       formData: {
-        secret: getAndSetUniversallyUniqueIdentifier()
+        secret: getAndSetUniversallyUniqueIdentifier(),
       },
-      json: false
+      json: false,
     };
 
     try {
       const response = JSON.parse(yield requestPromise(options));
-      databaseService.initializeConfigurationDataSet(response);
+      return databaseService.insertConfiguration(response);
     } catch (error) {
       console.log(error);
     }
   });
 }
 
+function registerDevice() {
+  return databaseService.getDeviceIdentifier()
+  .then((result) => {
+    console.log(result);
+    if (result.length === 0) {
+      return sendVerificationMessage();
+    }
+  });
+}
+
 
 module.exports = {
-  sendVerificationMessage,
+  registerDevice,
 };
