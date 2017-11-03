@@ -33,8 +33,8 @@ Function DoCanonicalInit()
   OpenOrCreateCurrentLog()
 
   ' Enable mouse cursor
-  gaa.touchScreen = CreateObject("roTouchScreen")
-  gaa.touchScreen.EnableCursor(true)
+  ' gaa.touchScreen = CreateObject("roTouchScreen")
+  ' gaa.touchScreen.EnableCursor(true)
 
   gaa.mp = CreateObject("roMessagePort")
 
