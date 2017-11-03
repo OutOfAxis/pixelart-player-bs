@@ -186,7 +186,7 @@ module.exports = {
 
         /* ECMAScript 6 */
         // 'arrow-body-style': 0,
-        'arrow-parens': [2, 'always'], // TODO(philipwalton): technically arrow
+        'arrow-parens': [1, 'always'], // TODO(philipwalton): technically arrow
                                        // parens are optional but recommended.
                                        // ESLint doesn't support a *consistent*
                                        // setting so "always" is used.

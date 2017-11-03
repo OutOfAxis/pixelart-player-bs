@@ -13,7 +13,6 @@ function runPromifisiedQuery(dbContext, query) {
         return;
       }
       resolve(rows);
-      return rows;
     });
   });
 }
@@ -48,7 +47,7 @@ function executeQuery(query) {
       const result = array[1];
       return Promise.all([result, closeDatabaseConnection(db)]);
     })
-    .then((array) => array[0]);
+    .then(array => array[0]);
 }
 
 function prepareInsertConfigurationQuery(response) {
