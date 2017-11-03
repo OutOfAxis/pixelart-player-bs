@@ -10,6 +10,16 @@ function getAndSetUniversallyUniqueIdentifier() {
   return identifier;
 }
 
+function registerDevice() {
+  return databaseService.getDeviceIdentifier()
+    .then((result) => {
+      console.log(result);
+      if (result.length === 0) {
+        return sendVerificationMessage();
+      }
+    });
+}
+
 function sendVerificationMessage(token) {
   return co(function* () {
     token = '47b129c';
@@ -31,17 +41,6 @@ function sendVerificationMessage(token) {
     }
   });
 }
-
-function registerDevice() {
-  return databaseService.getDeviceIdentifier()
-  .then((result) => {
-    console.log(result);
-    if (result.length === 0) {
-      return sendVerificationMessage();
-    }
-  });
-}
-
 
 module.exports = {
   registerDevice,
