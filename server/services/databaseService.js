@@ -10,7 +10,7 @@ function runPromifisiedQuery(dbContext, query) {
     dbContext.all(query, function(error, rows) {
       if (error) {
         reject(error);
-        return error;
+        return;
       }
       resolve(rows);
       return rows;
@@ -24,6 +24,7 @@ function closeDatabaseConnection(dbContext) {
       if (error) {
         console.error(error);
         reject(error);
+        return;
       }
       resolve();
     });
