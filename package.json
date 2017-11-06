@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/OutOfAxis/pixelart-player-bs#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^7.2.3",
+    "babel-preset-es2017": "^6.24.1",
     "base-64": "^0.1.0",
     "eslint": "^3.19.0",
     "eslint-plugin-promise": "^3.5.0"
