@@ -22,7 +22,7 @@ function registerDevice() {
 
 function sendVerificationMessage(token) {
   return co(function* () {
-    token = '2b1b0b9';
+    token = '98097c6';
 
     const options = {
       method: 'PUT',

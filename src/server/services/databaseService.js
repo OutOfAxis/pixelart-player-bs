@@ -1,9 +1,10 @@
 const encryption = require('../utils/encryption');
 const queries = require('../utils/queries');
+const communication = require('../utils/communication');
 
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
-const dbPath = path.resolve(__dirname, 'BrightPixel.db');
+const dbPath = path.resolve(communication.DATABASE_ADDRESS, 'BrightPixel.db');
 
 function runPromifisiedQuery(dbContext, query) {
   return new Promise((resolve, reject) => {
