@@ -1,6 +1,6 @@
 const encryption = require('../utils/encryption');
 const queries = require('../utils/queries');
-const communication = require('../utils/communication');
+const communication = require('../utils/config');
 
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
