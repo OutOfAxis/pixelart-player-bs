@@ -238,5 +238,7 @@ module.exports = {
         'promise/no-promise-in-callback': 'warn',
         'promise/no-callback-in-promise': 'warn',
         'promise/avoid-new': 'warn',
+        'promise/prefer-await-to-then': 2,
+        'promise/prefer-await-to-callbacks': 2
     }
 };

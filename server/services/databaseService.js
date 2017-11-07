@@ -30,28 +30,24 @@ function closeDatabaseConnection(dbContext) {
   });
 }
 
-function initializeConnectionWithDataBase() {
+async function initializeConnectionWithDataBase() {
   const db = new sqlite3.Database(dbPath);
+  await runPromifisiedQuery(db, queries.QUERY_CREATE_CONFIGURATION);
 
-  return runPromifisiedQuery(db, queries.QUERY_CREATE_CONFIGURATION)
-    .then(() => db);
+  return db;
 }
 
-function executeQuery(query) {
-  return initializeConnectionWithDataBase()
-    .then((db) => {
-      return Promise.all([db, runPromifisiedQuery(db, query)]);
-    })
-    .then((array) => {
-      const db = array[0];
-      const result = array[1];
-      return Promise.all([result, closeDatabaseConnection(db)]);
-    })
-    .then(array => array[0]);
+async function executeQuery(query) {
+  const db = await initializeConnectionWithDataBase();
+  const rows = await runPromifisiedQuery(db, query);
+  await closeDatabaseConnection(db);
+
+  return rows;
 }
 
 function prepareInsertConfigurationQuery(response) {
   const encodedConfiguration = encryption.encode(JSON.stringify(response));
+
   return (`${queries.QUERY_INSERT_CONFIGURATION }'${encodedConfiguration}' )`);
 }
 
@@ -67,11 +63,10 @@ function insertConfiguration(response) {
   return executeQuery(insertQuery);
 }
 
-function getConfiguration() {
-  return executeQuery(queries.QUERY_GET_CONFIGURATION)
-    .then((rows) => {
-      return JSON.parse(encryption.decode(rows[0].value));
-    });
+async function getConfiguration() {
+  const rows = await executeQuery(queries.QUERY_GET_CONFIGURATION);
+
+  return JSON.parse(encryption.decode(rows[0].value));
 }
 
 function getDeviceIdentifier() {
