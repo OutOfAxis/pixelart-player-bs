@@ -22,11 +22,12 @@ async function establishConnectionWithWebSocket() {
 
   ws.on('message', function incoming(data) {
     if (data) {
-      messagingService.handleMessage(data);
+      messagingService.handleMessage(data, ws);
     }
   });
 
   ws.send('something');
+
 }
 
 module.exports = {

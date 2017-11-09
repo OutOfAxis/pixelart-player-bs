@@ -1,5 +1,6 @@
-require('babel-core/register');
-// require('babel-polyfill');
+require('babel-register')({
+  retainLines: true,
+});
 
 const registrationService = require('./server/services/registrationService');
 const webSocket = require('./server/infrastructure/webSocket');
