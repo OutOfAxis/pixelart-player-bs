@@ -9,7 +9,6 @@ async function downloadFile(fileId, downloadPath, sourcePath) {
     sendReq.on('error', function(err) {
       fs.unlink(sourcePath);
       reject(err.message);
-      return;
     });
 
     sendReq.pipe(file);
@@ -21,7 +20,6 @@ async function downloadFile(fileId, downloadPath, sourcePath) {
     file.on('error', function(err) {
       fs.unlink(sourcePath);
       reject(err.message);
-      return;
     });
   });
 }

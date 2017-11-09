@@ -6,7 +6,7 @@ function handleMessage(content, webSocket) {
   const messageName = Object.getOwnPropertyNames(message)[0];
   message[messageName].webSocket = webSocket;
 
-  processMessageRequest(messageName, message[messageName], webSocket);
+  return processMessageRequest(messageName, message[messageName], webSocket);
 }
 
 function processMessageRequest(type, body) {
@@ -17,11 +17,14 @@ function processMessageRequest(type, body) {
     GetFile: selectGetFile,
     PostNewPlaylist: postNewPlaylist,
     GetPlaylist: getPlaylist,
-    setDefaultContent: setDefaultContent,
-    playDefault: playDefault,
-    setRecoverContent: setRecoverContent,
+    SetDefaultContent: setDefaultContent,
+    PlayDefault: playDefault,
+    SetRecoverContent: setRecoverContent,
   };
 
+  if(typeof(types[type]) === 'undefined') {
+    return unknownMessage(type, body);
+  }
   types[type](body);
 }
 
@@ -56,6 +59,10 @@ function setDefaultContent({ commandId, uri, webSocket }) {}
 function playDefault({ commandId, webSocket }) {}
 
 function setRecoverContent({ commandId, uri, webSocket }) {}
+
+function unknownMessage(type, { commandId, webSocket }){
+
+}
 
 module.exports = {
   handleMessage,
