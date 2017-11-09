@@ -41,26 +41,24 @@ function processMessageRequest(type, body) {
   types[type]();
 }
 
-function postNewFile({ commandId, fileId, downloadPath, sourcePath, fileSize, webSocket }) {
-  fileHandler.downloadFile(fileId, downloadPath, sourcePath);
-}
-
-function getFiles({ commandId, webSocket }) {
-  return console.log('Snork, snork. MAGIC.');
-
-}
-
-function deleteFile({ commandId, fileId, webSocket }) {
-  return console.log('Snork, snork. MAGIC.');
-
-}
-
 function selectGetFile(body) {
   if (body.fielId) {
     getFileById(body);
   } else {
     getFileByPath(body);
   }
+}
+
+function postNewFile({ commandId, fileId, downloadPath, sourcePath, fileSize, webSocket }) {
+  fileHandler.downloadFile(fileId, downloadPath, sourcePath);
+}
+
+function getFiles({ commandId, webSocket }) {
+
+}
+
+function deleteFile({ commandId, fileId, webSocket }) {
+
 }
 
 function getFileById({ commandId, fileId, uploadPath, webSocket }) {
@@ -71,7 +69,6 @@ function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {
 }
 
 function postNewPlaylist({ commandId, fileId, downloadPath, playList, webSocket }) {
-  return console.log('Snork, snork. MAGIC.');
 }
 
 function getPlaylist({ commandId, webSocket }) {
@@ -88,17 +85,14 @@ function getPlaylist({ commandId, webSocket }) {
 }
 
 function setDefaultContent({ commandId, uri, webSocket }) {
-  return console.log('Snork, snork. MAGIC.');
 
 }
 
 function playDefault({ commandId, webSocket }) {
-  return console.log('Snork, snork. MAGIC.');
 
 }
 
 function setRecoverContent({ commandId, uri, webSocket }) {
-  return console.log('Snork, snork. MAGIC.');
 
 }
 

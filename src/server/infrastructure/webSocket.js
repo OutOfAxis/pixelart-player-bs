@@ -1,5 +1,5 @@
 const databaseService = require('../services/databaseService');
-const messagingService = require('../services/messagingService');
+const messagingService = require('../services/requestService');
 const encryption = require('../utils/encryption');
 const communication = require('../utils/config');
 
