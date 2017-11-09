@@ -6,28 +6,22 @@ async function downloadFile(fileId, downloadPath, sourcePath) {
     const file = fs.createWriteStream(sourcePath);
     const sendReq = request.get(downloadPath);
 
-    // verify response code
-    sendReq.on('response', function(response) {
-      if (response.statusCode !== 200) {
-        return resolve(`Response status was ${ response.statusCode}`);
-      }
-    });
-
-    // check for request errors
     sendReq.on('error', function(err) {
       fs.unlink(sourcePath);
-      return reject(err.message);
+      reject(err.message);
+      return;
     });
 
     sendReq.pipe(file);
 
     file.on('finish', function() {
-      file.close(() => resolve('im done!!!'));  // close() is async, call cb after close completes.
+      file.close(() => resolve());
     });
 
-    file.on('error', function(err) { // Handle errors
-      fs.unlink(sourcePath); // Delete the file async. (But we don't check the result)
-      return reject(err.message);
+    file.on('error', function(err) {
+      fs.unlink(sourcePath);
+      reject(err.message);
+      return;
     });
   });
 }

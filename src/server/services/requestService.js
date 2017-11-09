@@ -1,44 +1,28 @@
 const fileHandler = require('../utils/fileHandler');
+const responseService = require('./responseService');
 
 function handleMessage(content, webSocket) {
   const message = JSON.parse(content);
   const messageName = Object.getOwnPropertyNames(message)[0];
   message[messageName].webSocket = webSocket;
+
   processMessageRequest(messageName, message[messageName], webSocket);
 }
 
 function processMessageRequest(type, body) {
   const types = {
-    'PostNewFile': () => {
-      postNewFile(body);
-    },
-    'GetFiles': () => {
-      getFiles(body);
-    },
-    'DeleteFile': () => {
-      deleteFile(body);
-    },
-    'GetFile': () => {
-      selectGetFile(body);
-    },
-    'PostNewPlaylist': () => {
-      postNewPlaylist(body);
-    },
-    'GetPlaylist': () => {
-      getPlaylist(body);
-    },
-    'setDefaultContent': () => {
-      setDefaultContent(body);
-    },
-    'playDefault': () => {
-      playDefault(body);
-    },
-    'setRecoverContent': () => {
-      setRecoverContent(body);
-    },
+    PostNewFile: postNewFile,
+    GetFiles: getFiles,
+    DeleteFile: deleteFile,
+    GetFile: selectGetFile,
+    PostNewPlaylist: postNewPlaylist,
+    GetPlaylist: getPlaylist,
+    setDefaultContent: setDefaultContent,
+    playDefault: playDefault,
+    setRecoverContent: setRecoverContent,
   };
 
-  types[type]();
+  types[type](body);
 }
 
 function selectGetFile(body) {
@@ -72,16 +56,8 @@ function postNewPlaylist({ commandId, fileId, downloadPath, playList, webSocket 
 }
 
 function getPlaylist({ commandId, webSocket }) {
-  const response = {
-    'PlayerPlaylist': {
-      'commandId': commandId,
-      'playlist': '[]',
-    },
-  };
 
-  webSocket.send(JSON.stringify(response));
-  console.log(response);
-  console.log(JSON.stringify(response));
+  webSocket.send(responseService.playerPlayListResponse(commandId, '[]'));
 }
 
 function setDefaultContent({ commandId, uri, webSocket }) {
