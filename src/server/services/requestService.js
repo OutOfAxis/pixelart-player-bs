@@ -37,40 +37,25 @@ function postNewFile({ commandId, fileId, downloadPath, sourcePath, fileSize, we
   fileHandler.downloadFile(fileId, downloadPath, sourcePath);
 }
 
-function getFiles({ commandId, webSocket }) {
+function getFiles({ commandId, webSocket }) {}
 
-}
+function deleteFile({ commandId, fileId, webSocket }) {}
 
-function deleteFile({ commandId, fileId, webSocket }) {
+function getFileById({ commandId, fileId, uploadPath, webSocket }) {}
 
-}
+function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {}
 
-function getFileById({ commandId, fileId, uploadPath, webSocket }) {
-}
-
-function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {
-
-}
-
-function postNewPlaylist({ commandId, fileId, downloadPath, playList, webSocket }) {
-}
+function postNewPlaylist({ commandId, fileId, downloadPath, playList, webSocket }) {}
 
 function getPlaylist({ commandId, webSocket }) {
-
   webSocket.send(responseService.playerPlayListResponse(commandId, '[]'));
 }
 
-function setDefaultContent({ commandId, uri, webSocket }) {
+function setDefaultContent({ commandId, uri, webSocket }) {}
 
-}
+function playDefault({ commandId, webSocket }) {}
 
-function playDefault({ commandId, webSocket }) {
-
-}
-
-function setRecoverContent({ commandId, uri, webSocket }) {
-
-}
+function setRecoverContent({ commandId, uri, webSocket }) {}
 
 module.exports = {
   handleMessage,
