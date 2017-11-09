@@ -25,9 +25,6 @@ async function establishConnectionWithWebSocket() {
       messagingService.handleMessage(data, ws);
     }
   });
-
-  ws.send('something');
-
 }
 
 module.exports = {
