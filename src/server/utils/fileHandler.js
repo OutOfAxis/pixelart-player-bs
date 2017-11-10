@@ -25,7 +25,7 @@ async function downloadFile(fileId, downloadPath, sourcePath) {
 }
 
 function createNewFile(fileId, downloadPath, content) {
-  console.log(`File ${ fileId } has been created.`);
+  console.log(`File ${ fileId } has been created. ${ downloadPath } ${ content }`);
 }
 
 module.exports = {

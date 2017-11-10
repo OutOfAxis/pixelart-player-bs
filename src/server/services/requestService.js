@@ -61,7 +61,7 @@ function playDefault({ commandId, webSocket }) {}
 function setRecoverContent({ commandId, uri, webSocket }) {}
 
 function unknownMessage(type, { commandId, webSocket }){
-
+  webSocket.send(responseService.unknownMessage(type, commandId));
 }
 
 module.exports = {

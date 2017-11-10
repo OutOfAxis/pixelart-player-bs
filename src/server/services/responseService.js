@@ -7,6 +7,16 @@ function playerPlayListResponse(commandId, playlist) {
   });
 }
 
+function unknownMessage(type, commandId) {
+  return JSON.stringify({
+    UnknownMessageType: {
+      commandId,
+      type,
+    },
+  });
+}
+
 module.exports = {
   playerPlayListResponse,
+  unknownMessage,
 };
