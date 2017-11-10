@@ -22,7 +22,7 @@ function processMessageRequest(type, body) {
     SetRecoverContent: setRecoverContent,
   };
 
-  if (!typeof(types[type])) {
+  if (!types[type]) {
     return unknownMessage(type, body);
   }
   types[type](body);
