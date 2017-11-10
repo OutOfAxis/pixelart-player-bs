@@ -1,5 +1,5 @@
 const databaseService = require('./databaseService');
-const communication = require('../utils/communication');
+const communication = require('../utils/config');
 const co = require('co');
 const requestPromise = require('request-promise');
 const uuid = require('uuid-v4');
