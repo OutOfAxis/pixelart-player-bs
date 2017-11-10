@@ -17,7 +17,8 @@ module.exports = {
         '__API_ROOT__': true,
         '__LOAD_BALANCER_URL__': true,
         'it': true,
-      'beforeEach': true,
+        'beforeEach': true,
+        'describe': true,
     },
     'rules': {
         /* Possible Errors */
@@ -30,7 +31,7 @@ module.exports = {
         }],
         // 'no-cond-assign': [2, 'except-parens'], // disallow assignment operators in conditional expressions
         'no-console': 0,
-        'no-constant-condition': 2,
+        'no-constant-condition': 1,
         'no-control-regex': 2,
         'no-debugger': 2,
         'no-dupe-args': 2,

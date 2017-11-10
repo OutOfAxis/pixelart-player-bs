@@ -22,7 +22,7 @@ function processMessageRequest(type, body) {
     SetRecoverContent: setRecoverContent,
   };
 
-  if(typeof(types[type]) === 'undefined') {
+  if (!typeof(types[type])) {
     return unknownMessage(type, body);
   }
   types[type](body);
@@ -60,7 +60,7 @@ function playDefault({ commandId, webSocket }) {}
 
 function setRecoverContent({ commandId, uri, webSocket }) {}
 
-function unknownMessage(type, { commandId, webSocket }){
+function unknownMessage(type, { commandId, webSocket }) {
   webSocket.send(responseService.unknownMessage(type, commandId));
 }
 
