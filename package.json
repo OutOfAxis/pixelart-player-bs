@@ -9,7 +9,11 @@
   },
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha test --recursive --colors --no-timeouts --compilers js:babel-core/register",
-    "lint": "node node_modules/eslint/bin/eslint.js src/"
+    "lint": "node node_modules/eslint/bin/eslint.js src/",
+    "git-pre-hooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "npm run test"
+    }
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +29,7 @@
     "base-64": "^0.1.0",
     "eslint": "^3.19.0",
     "eslint-plugin-promise": "^3.5.0",
+    "git-pre-hooks": "^1.2.0",
     "nodemon": "^1.12.1",
     "sinon": "^4.1.2"
   },
