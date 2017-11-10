@@ -1,6 +1,8 @@
 const fs = require('fs');
 const request = require('request');
 
+const config = require('../utils/config');
+
 async function downloadFile(fileId, downloadPath, sourcePath) {
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(sourcePath);
@@ -24,10 +26,38 @@ async function downloadFile(fileId, downloadPath, sourcePath) {
   });
 }
 
-function createNewFile(fileId, downloadPath, content) {
-  console.log(`File ${ fileId } has been created. ${ downloadPath } ${ content }`);
+function createNewFile(path, content) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(path, content, (error) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
+function getFileContent(path) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, 'utf8', (error, data) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      if (!data) {
+        data = '[]';
+      }
+
+      resolve(data);
+    });
+  });
 }
 
 module.exports = {
   downloadFile,
+  createNewFile,
+  getFileContent,
 };

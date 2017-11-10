@@ -13,12 +13,14 @@ module.exports = {
     ],
     'parser': 'babel-eslint',
     'globals': {
-        '__APP_ROOT__': true,
-        '__API_ROOT__': true,
-        '__LOAD_BALANCER_URL__': true,
-        'it': true,
-        'beforeEach': true,
-        'describe': true,
+      '__APP_ROOT__': true,
+      '__API_ROOT__': true,
+      '__LOAD_BALANCER_URL__': true,
+      'it': true,
+      'beforeEach': true,
+      'describe': true,
+      'before': true,
+      'after': true,
     },
     'rules': {
         /* Possible Errors */

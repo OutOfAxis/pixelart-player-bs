@@ -126,3 +126,6 @@ typings/
 
 #Babe
 dist
+
+# Temps
+tmp
