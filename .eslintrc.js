@@ -15,7 +15,9 @@ module.exports = {
     'globals': {
         '__APP_ROOT__': true,
         '__API_ROOT__': true,
-        '__LOAD_BALANCER_URL__': true
+        '__LOAD_BALANCER_URL__': true,
+        'it': true,
+      'beforeEach': true,
     },
     'rules': {
         /* Possible Errors */

@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git+https://github.com/OutOfAxis/pixelart-player-bs.git"
   },
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha test --recursive --colors --no-timeouts --compilers js:babel-core/register"
+  },
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -25,6 +28,7 @@
     "sinon": "^4.1.2"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "chai": "^4.1.2",
     "co": "^4.6.0",
     "express": "^4.16.2",
