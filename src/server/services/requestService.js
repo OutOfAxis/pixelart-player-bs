@@ -60,7 +60,7 @@ async function postNewPlaylist({ commandId, playList, webSocket }) {
 }
 
 async function getPlaylist({ commandId, webSocket }) {
-  let playList;
+  let playList = '[]';
   try {
     playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
   } catch (error) {
