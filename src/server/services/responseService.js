@@ -15,6 +15,25 @@ function commandAckResponse(commandId) {
   });
 }
 
+function getFilesResponse(commandId, files) {
+  // Changes needed
+  return JSON.stringify({
+    PlayerFiles: {
+      commandId,
+      files,
+    },
+  });
+}
+
+function commandErrorResponse(commandId, reason) {
+  return JSON.stringify({
+    CommandError: {
+      commandId,
+      reason,
+    },
+  });
+}
+
 function unknownMessage(type, commandId) {
   return JSON.stringify({
     UnknownMessageType: {
@@ -27,5 +46,7 @@ function unknownMessage(type, commandId) {
 module.exports = {
   playerPlayListResponse,
   commandAckResponse,
+  getFilesResponse,
+  commandErrorResponse,
   unknownMessage,
 };

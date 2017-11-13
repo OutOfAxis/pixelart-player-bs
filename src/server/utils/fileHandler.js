@@ -1,6 +1,7 @@
 const fs = require('fs');
 const request = require('request');
 const mkdirp = require('mkdirp');
+const path = require('path');
 
 const config = require('../utils/config');
 
@@ -57,6 +58,44 @@ function getFileContent(path) {
   });
 }
 
+function getFileDetails(file) {
+  const pathToFile = config.CONTENT_ADDRESS + file;
+  const stats = fs.stat(pathToFile);
+  const extension = path.extname(pathToFile);
+  const fileSizeInBytes = fs.stat(pathToFile).size;
+  console.log(stats);
+
+  return {
+    stats,
+    extension,
+    fileSizeInBytes,
+  };
+}
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
+async function getResourcesDetails() {
+  return new Promise((resolve, reject) => {
+    fs.readdir(config.CONTENT_ADDRESS, (error, files) => {
+      if (error) {
+        console.log(error);
+        reject(error);
+        return;
+      }
+      const filesDetails = [];
+      asyncForEach(files, async (file) => {
+        const details = await getFileDetails(file);
+        filesDetails.push(details);
+      });
+      console.log(filesDetails);
+      resolve(filesDetails);
+    });
+  });
+}
+
 function deleteFile(filePath) {
   fs.unlink(filePath, (fsErr) => {
     if (fsErr) {
@@ -69,7 +108,7 @@ function deleteFile(filePath) {
 
 function initDirectories() {
   return new Promise((resolve, reject) => {
-    const dirPath = config.PLAYLIST_ADDRESS;
+    const dirPath = config.CONTENT_ADDRESS;
     mkdirp(dirPath, (error) => {
       if (error) {
         console.log(`Error during creating directory: ${error}`);
@@ -86,5 +125,7 @@ module.exports = {
   downloadFile,
   createNewFile,
   getFileContent,
+  getResourcesDetails,
   deleteFile,
+  initDirectories,
 };

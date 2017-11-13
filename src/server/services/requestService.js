@@ -6,7 +6,8 @@ function handleMessage(content, webSocket) {
   const message = JSON.parse(content);
   const messageName = Object.getOwnPropertyNames(message)[0];
   message[messageName].webSocket = webSocket;
-
+  console.log(messageName);
+  
   return processMessageRequest(messageName, message[messageName], webSocket);
 }
 
@@ -42,7 +43,18 @@ function postNewFile({ commandId, fileId, downloadPath, sourcePath, fileSize, we
   fileHandler.downloadFile(fileId, downloadPath, sourcePath);
 }
 
-function getFiles({ commandId, webSocket }) {}
+function getFiles({ commandId, webSocket }) {
+  let content = [];
+  try {
+    content = fileHandler.getResourcesDetails();
+  } catch (error) {
+    console.log(error);
+    webSocket.send(responseService.commandErrorResponse(commandId, error));
+
+    return;
+  }
+  webSocket.send(responseService.getFilesResponse(commandId, content));
+}
 
 function deleteFile({ commandId, fileId, webSocket }) {}
 
