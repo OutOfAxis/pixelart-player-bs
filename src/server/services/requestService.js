@@ -1,5 +1,6 @@
 const fileHandler = require('../utils/fileHandler');
 const responseService = require('./responseService');
+const config = require('../utils/config');
 
 function handleMessage(content, webSocket) {
   const message = JSON.parse(content);
@@ -25,7 +26,8 @@ function processMessageRequest(type, body) {
   if (!types[type]) {
     return unknownMessage(type, body);
   }
-  types[type](body);
+
+  return types[type](body);
 }
 
 function selectGetFile(body) {
@@ -48,10 +50,25 @@ function getFileById({ commandId, fileId, uploadPath, webSocket }) {}
 
 function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {}
 
-function postNewPlaylist({ commandId, fileId, downloadPath, playList, webSocket }) {}
+async function postNewPlaylist({ commandId, playList, webSocket }) {
+  try {
+    await fileHandler.createNewFile(config.PLAYLIST_ADDRESS, playList);
+  } catch (error) {
+    console.log(error);
+  }
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
 
-function getPlaylist({ commandId, webSocket }) {
-  webSocket.send(responseService.playerPlayListResponse(commandId, '[]'));
+async function getPlaylist({ commandId, webSocket }) {
+  let playList = '[]';
+  try {
+    playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
+  } catch (error) {
+    if (error === 'ENOENT') {
+      playList = '[]';
+    }
+  }
+  webSocket.send(responseService.playerPlayListResponse(commandId, playList));
 }
 
 function setDefaultContent({ commandId, uri, webSocket }) {}

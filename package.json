@@ -30,6 +30,7 @@
     "eslint": "^3.19.0",
     "eslint-plugin-promise": "^3.5.0",
     "git-pre-hooks": "^1.2.0",
+    "mockery": "^2.1.0",
     "nodemon": "^1.12.1",
     "sinon": "^4.1.2"
   },

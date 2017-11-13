@@ -7,6 +7,14 @@ function playerPlayListResponse(commandId, playlist) {
   });
 }
 
+function commandAckResponse(commandId) {
+  return JSON.stringify({
+    CommandAck: {
+      commandId,
+    },
+  });
+}
+
 function unknownMessage(type, commandId) {
   return JSON.stringify({
     UnknownMessageType: {
@@ -18,5 +26,6 @@ function unknownMessage(type, commandId) {
 
 module.exports = {
   playerPlayListResponse,
+  commandAckResponse,
   unknownMessage,
 };
