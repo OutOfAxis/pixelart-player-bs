@@ -1,5 +1,6 @@
 const fs = require('fs');
 const request = require('request');
+const mkdirp = require('mkdirp');
 
 const config = require('../utils/config');
 
@@ -56,8 +57,34 @@ function getFileContent(path) {
   });
 }
 
+function deleteFile(filePath) {
+  fs.unlink(filePath, (fsErr) => {
+    if (fsErr) {
+      console.log(`Error during deleting file ${filePath}: ${fsErr}`);
+    } else {
+      console.log(`File deleted: ${filePath}`);
+    }
+  });
+}
+
+function initDirectories() {
+  return new Promise((resolve, reject) => {
+    const dirPath = config.PLAYLIST_ADDRESS;
+    mkdirp(dirPath, (error) => {
+      if (error) {
+        console.log(`Error during creating directory: ${error}`);
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
 module.exports = {
   downloadFile,
   createNewFile,
   getFileContent,
+  deleteFile,
 };
