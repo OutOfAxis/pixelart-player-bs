@@ -5,10 +5,10 @@ require('babel-register')({
 const registrationService = require('./server/services/registrationService');
 const webSocket = require('./server/infrastructure/webSocket');
 const fileHandler = require('./server/utils/fileHandler');
+const config = require('./server/utils/config');
 
 (async function() {
-  await fileHandler.getResourcesDetails();
-  await fileHandler.initDirectories();
+  await fileHandler.initDirectories(config.CONTENT_ADDRESS);
   await registrationService.registerDevice();
   webSocket.establishConnectionWithWebSocket();
 })();

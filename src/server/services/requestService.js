@@ -7,7 +7,7 @@ function handleMessage(content, webSocket) {
   const messageName = Object.getOwnPropertyNames(message)[0];
   message[messageName].webSocket = webSocket;
   console.log(messageName);
-  
+
   return processMessageRequest(messageName, message[messageName], webSocket);
 }
 
@@ -39,20 +39,31 @@ function selectGetFile(body) {
   }
 }
 
-function postNewFile({ commandId, fileId, downloadPath, sourcePath, fileSize, webSocket }) {
-  fileHandler.downloadFile(fileId, downloadPath, sourcePath);
+async function postNewFile({ commandId, fileId, sourcePath, webSocket }) {
+  let transferredFileStats;
+  try {
+    await fileHandler.downloadFile(fileId, sourcePath);
+    transferredFileStats = await fileHandler.getFileDetails(fileId);
+  } catch (error) {
+    console.log(error);
+    webSocket.send(responseService.fileDownloadFiledResponse(commandId, fileId, error));
+    return;
+  }
+
+  webSocket.send(responseService.fileDownloadedResponse(commandId, fileId, transferredFileStats.transferredSize));
 }
 
-function getFiles({ commandId, webSocket }) {
+async function getFiles({ commandId, webSocket }) {
   let content = [];
   try {
-    content = fileHandler.getResourcesDetails();
+    content = await fileHandler.getResourcesDetails();
   } catch (error) {
     console.log(error);
     webSocket.send(responseService.commandErrorResponse(commandId, error));
 
     return;
   }
+
   webSocket.send(responseService.getFilesResponse(commandId, content));
 }
 
@@ -68,6 +79,7 @@ async function postNewPlaylist({ commandId, playList, webSocket }) {
   } catch (error) {
     console.log(error);
   }
+
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
@@ -80,10 +92,22 @@ async function getPlaylist({ commandId, webSocket }) {
       playList = '[]';
     }
   }
+
   webSocket.send(responseService.playerPlayListResponse(commandId, playList));
 }
 
-function setDefaultContent({ commandId, uri, webSocket }) {}
+function setDefaultContent({ commandId, uri, webSocket }) {
+  try {
+    console.log(uri);
+  } catch (error) {
+    console.log(error);
+    webSocket.send(responseService.commandErrorResponse(commandId, error));
+
+    return;
+  }
+
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
 
 function playDefault({ commandId, webSocket }) {}
 

@@ -1,3 +1,13 @@
+function fileDownloadedResponse(commandId, fileId, transferredSize) {
+  return JSON.stringify({
+    FileDownloaded: {
+      commandId,
+      fileId,
+      transferredSize,
+    },
+  });
+}
+
 function playerPlayListResponse(commandId, playlist) {
   return JSON.stringify({
     PlayerPlaylist: {
@@ -25,6 +35,16 @@ function getFilesResponse(commandId, files) {
   });
 }
 
+function fileDownloadFiledResponse(commandId, fileId,reason) {
+  return JSON.stringify({
+    FileDownloadFailed: {
+      commandId,
+      fileId,
+      reason,
+    },
+  });
+}
+
 function commandErrorResponse(commandId, reason) {
   return JSON.stringify({
     CommandError: {
@@ -44,9 +64,11 @@ function unknownMessage(type, commandId) {
 }
 
 module.exports = {
+  fileDownloadedResponse,
   playerPlayListResponse,
   commandAckResponse,
   getFilesResponse,
+  fileDownloadFiledResponse,
   commandErrorResponse,
   unknownMessage,
 };

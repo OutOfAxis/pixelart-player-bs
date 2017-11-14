@@ -5,10 +5,12 @@ const path = require('path');
 
 const config = require('../utils/config');
 
-async function downloadFile(fileId, downloadPath, sourcePath) {
+async function downloadFile(fileId, sourcePath) {
   return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(sourcePath);
-    const sendReq = request.get(downloadPath);
+    const filePath = path.join(config.CONTENT_ADDRESS, fileId);
+    initDirectories(path.dirname(filePath));
+    const file = fs.createWriteStream(filePath);
+    const sendReq = request.get(sourcePath);
 
     sendReq.on('error', function(err) {
       fs.unlink(sourcePath);
@@ -28,9 +30,9 @@ async function downloadFile(fileId, downloadPath, sourcePath) {
   });
 }
 
-function createNewFile(path, content) {
+function createNewFile(filePath, content) {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, content, (error) => {
+    fs.writeFile(filePath, content, (error) => {
       if (error) {
         console.log(error);
         reject(error);
@@ -42,9 +44,9 @@ function createNewFile(path, content) {
   });
 }
 
-function getFileContent(path) {
+function getFileContent(filePath) {
   return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf8', (error, data) => {
+    fs.readFile(filePath, 'utf8', (error, data) => {
       if (error) {
         reject(error);
         return;
@@ -58,25 +60,19 @@ function getFileContent(path) {
   });
 }
 
-function getFileDetails(file) {
-  const pathToFile = config.CONTENT_ADDRESS + file;
-  const stats = fs.stat(pathToFile);
-  const extension = path.extname(pathToFile);
-  const fileSizeInBytes = fs.stat(pathToFile).size;
-  console.log(stats);
+async function getFileDetails(fileId) {
+  const localPath = path.join(config.CONTENT_ADDRESS, fileId);
+  const stats = fs.statSync(localPath);
+  const mimeType = await path.extname(localPath);
 
   return {
-    stats,
-    extension,
-    fileSizeInBytes,
+    fileId,
+    localPath,
+    transferredSize: stats.size,
+    mimeType,
   };
 }
 
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-}
 async function getResourcesDetails() {
   return new Promise((resolve, reject) => {
     fs.readdir(config.CONTENT_ADDRESS, (error, files) => {
@@ -85,13 +81,9 @@ async function getResourcesDetails() {
         reject(error);
         return;
       }
-      const filesDetails = [];
-      asyncForEach(files, async (file) => {
-        const details = await getFileDetails(file);
-        filesDetails.push(details);
-      });
-      console.log(filesDetails);
-      resolve(filesDetails);
+      const promises = files.map((file) => getFileDetails(file));
+      resolve(Promise.all(promises));
+
     });
   });
 }
@@ -106,9 +98,8 @@ function deleteFile(filePath) {
   });
 }
 
-function initDirectories() {
+function initDirectories(dirPath) {
   return new Promise((resolve, reject) => {
-    const dirPath = config.CONTENT_ADDRESS;
     mkdirp(dirPath, (error) => {
       if (error) {
         console.log(`Error during creating directory: ${error}`);
@@ -125,6 +116,7 @@ module.exports = {
   downloadFile,
   createNewFile,
   getFileContent,
+  getFileDetails,
   getResourcesDetails,
   deleteFile,
   initDirectories,
