@@ -26,7 +26,6 @@ function commandAckResponse(commandId) {
 }
 
 function getFilesResponse(commandId, files) {
-  // Changes needed
   return JSON.stringify({
     PlayerFiles: {
       commandId,

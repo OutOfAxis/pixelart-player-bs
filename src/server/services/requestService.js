@@ -44,7 +44,7 @@ async function postNewFile({ commandId, fileId, sourcePath, webSocket }) {
   let transferredFileStats;
   try {
     await fileHandler.downloadFile(fileId, sourcePath);
-    transferredFileStats = await fileHandler.getFileDetails(fileId);
+    transferredFileStats = await fileHandler.getFileDetails(config.CONTENT_ADDRESS + fileId);
   } catch (error) {
     console.log(error);
     webSocket.send(responseService.fileDownloadFailedResponse(commandId, fileId, error));

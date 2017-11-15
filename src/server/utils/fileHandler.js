@@ -9,7 +9,6 @@ const config = require('../utils/config');
 async function downloadFile(fileId, sourcePath) {
   const filePath = path.join(config.CONTENT_ADDRESS, fileId);
   await initDirectories(path.dirname(filePath));
-
   return new Promise((resolve, reject) => {
     const file = fs.createWriteStream(filePath);
     const sendReq = request.get(sourcePath);
@@ -63,15 +62,22 @@ function getFileContent(filePath) {
 }
 
 async function getFileDetails(fileId) {
-  const stats = fs.statSync(fileId);
-  const mimeType = await path.extname(fileId);
+  return new Promise((resolve, reject) => {
+    fs.stat(fileId, function(error, stats) {
+      if (error) {
+        reject(error);
+        return;
+      }
+      const mimeType = path.extname(fileId);
 
-  return {
-    fileId: path.basename(fileId),
-    localPath: fileId,
-    transferredSize: stats.size,
-    mimeType,
-  };
+      resolve({
+        fileId: path.basename(fileId),
+        localPath: fileId,
+        transferredSize: stats.size,
+        mimeType,
+      });
+    });
+  });
 }
 
 async function getResourcesDetails() {
@@ -106,7 +112,6 @@ function initDirectories(dirPath) {
         reject(error);
         return;
       }
-
       resolve();
     });
   });
