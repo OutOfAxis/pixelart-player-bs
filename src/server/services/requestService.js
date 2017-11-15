@@ -47,7 +47,7 @@ async function postNewFile({ commandId, fileId, sourcePath, webSocket }) {
     transferredFileStats = await fileHandler.getFileDetails(fileId);
   } catch (error) {
     console.log(error);
-    webSocket.send(responseService.fileDownloadFiledResponse(commandId, fileId, error));
+    webSocket.send(responseService.fileDownloadFailedResponse(commandId, fileId, error));
     return;
   }
 
@@ -68,7 +68,9 @@ async function getFiles({ commandId, webSocket }) {
   webSocket.send(responseService.getFilesResponse(commandId, content));
 }
 
-function deleteFile({ commandId, fileId, webSocket }) {}
+function deleteFile({ commandId, fileId, webSocket }) {
+
+}
 
 function getFileById({ commandId, fileId, uploadPath, webSocket }) {}
 
@@ -79,6 +81,8 @@ async function postNewPlaylist({ commandId, playList, webSocket }) {
     await fileHandler.createNewFile(config.PLAYLIST_ADDRESS, playList);
   } catch (error) {
     console.log(error);
+
+    return;
   }
 
   webSocket.send(responseService.commandAckResponse(commandId));
@@ -97,9 +101,9 @@ async function getPlaylist({ commandId, webSocket }) {
   webSocket.send(responseService.playerPlayListResponse(commandId, playList));
 }
 
-function setDefaultContent({ commandId, uri, webSocket }) {
+async function setDefaultContent({ commandId, uri, webSocket }) {
   try {
-    databaseService.insertDefaultContent(uri);
+    await databaseService.insertDefaultContent(uri);
   } catch (error) {
     console.log(error);
     webSocket.send(responseService.commandErrorResponse(commandId, error));

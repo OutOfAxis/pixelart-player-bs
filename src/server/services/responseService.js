@@ -35,7 +35,7 @@ function getFilesResponse(commandId, files) {
   });
 }
 
-function fileDownloadFiledResponse(commandId, fileId,reason) {
+function fileDownloadFailedResponse(commandId, fileId,reason) {
   return JSON.stringify({
     FileDownloadFailed: {
       commandId,
@@ -68,7 +68,7 @@ module.exports = {
   playerPlayListResponse,
   commandAckResponse,
   getFilesResponse,
-  fileDownloadFiledResponse,
+  fileDownloadFailedResponse,
   commandErrorResponse,
   unknownMessage,
 };

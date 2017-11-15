@@ -2,6 +2,7 @@ const fs = require('fs');
 const request = require('request');
 const mkdirp = require('mkdirp');
 const path = require('path');
+const recursive = require('recursive-readdir');
 
 const config = require('../utils/config');
 
@@ -62,13 +63,12 @@ function getFileContent(filePath) {
 }
 
 async function getFileDetails(fileId) {
-  const localPath = path.join(config.CONTENT_ADDRESS, fileId);
-  const stats = fs.statSync(localPath);
-  const mimeType = await path.extname(localPath);
+  const stats = fs.statSync(fileId);
+  const mimeType = await path.extname(fileId);
 
   return {
-    fileId,
-    localPath,
+    fileId: path.basename(fileId),
+    localPath: fileId,
     transferredSize: stats.size,
     mimeType,
   };
@@ -76,7 +76,7 @@ async function getFileDetails(fileId) {
 
 async function getResourcesDetails() {
   return new Promise((resolve, reject) => {
-    fs.readdir(config.CONTENT_ADDRESS, (error, files) => {
+    recursive(config.CONTENT_ADDRESS, (error, files) => {
       if (error) {
         console.log(error);
         reject(error);
@@ -84,7 +84,6 @@ async function getResourcesDetails() {
       }
       const promises = files.map((file) => getFileDetails(file));
       resolve(Promise.all(promises));
-
     });
   });
 }

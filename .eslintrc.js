@@ -21,6 +21,7 @@ module.exports = {
       'describe': true,
       'before': true,
       'after': true,
+      'afterEach': true,
     },
     'rules': {
         /* Possible Errors */
