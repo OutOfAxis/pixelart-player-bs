@@ -6,9 +6,10 @@ const path = require('path');
 const config = require('../utils/config');
 
 async function downloadFile(fileId, sourcePath) {
+  const filePath = path.join(config.CONTENT_ADDRESS, fileId);
+  await initDirectories(path.dirname(filePath));
+
   return new Promise((resolve, reject) => {
-    const filePath = path.join(config.CONTENT_ADDRESS, fileId);
-    initDirectories(path.dirname(filePath));
     const file = fs.createWriteStream(filePath);
     const sendReq = request.get(sourcePath);
 

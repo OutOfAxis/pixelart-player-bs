@@ -1,5 +1,6 @@
 const fileHandler = require('../utils/fileHandler');
 const responseService = require('./responseService');
+const databaseService = require('./databaseService');
 const config = require('../utils/config');
 
 function handleMessage(content, webSocket) {
@@ -98,7 +99,7 @@ async function getPlaylist({ commandId, webSocket }) {
 
 function setDefaultContent({ commandId, uri, webSocket }) {
   try {
-    console.log(uri);
+    databaseService.insertDefaultContent(uri);
   } catch (error) {
     console.log(error);
     webSocket.send(responseService.commandErrorResponse(commandId, error));
@@ -109,7 +110,17 @@ function setDefaultContent({ commandId, uri, webSocket }) {
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
-function playDefault({ commandId, webSocket }) {}
+function playDefault({ commandId, webSocket }) {
+  try {
+    console.log('Here we play default content');
+  } catch (error) {
+    webSocket.send(responseService.commandErrorResponse(commandId, error));
+
+    return;
+  }
+
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
 
 function setRecoverContent({ commandId, uri, webSocket }) {}
 
