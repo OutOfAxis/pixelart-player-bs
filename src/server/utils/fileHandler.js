@@ -95,12 +95,16 @@ async function getResourcesDetails() {
 }
 
 function deleteFile(filePath) {
-  fs.unlink(filePath, (fsErr) => {
-    if (fsErr) {
-      console.log(`Error during deleting file ${filePath}: ${fsErr}`);
-    } else {
-      console.log(`File deleted: ${filePath}`);
-    }
+  return new Promise((resolve, reject) => {
+    fs.unlink(filePath, (fsErr) => {
+      if (fsErr) {
+        console.log(`Error during deleting file ${filePath}: ${fsErr}`);
+        reject(fsErr);
+        return;
+
+      }
+      resolve();
+    });
   });
 }
 

@@ -68,8 +68,13 @@ async function getFiles({ commandId, webSocket }) {
   webSocket.send(responseService.getFilesResponse(commandId, content));
 }
 
-function deleteFile({ commandId, fileId, webSocket }) {
-
+async function deleteFile({ commandId, fileId, webSocket }) {
+  try {
+    await fileHandler.deleteFile(fileId);
+  } catch (error) {
+    console.log(error);
+  }
+  webSocket.send(responseService.commandAckResponse(commandId));
 }
 
 function getFileById({ commandId, fileId, uploadPath, webSocket }) {}
