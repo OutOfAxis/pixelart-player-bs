@@ -33,7 +33,7 @@ function processMessageRequest(type, body) {
 }
 
 function selectGetFile(body) {
-  if (body.fielId) {
+  if (body.fileId) {
     getFileById(body);
   } else {
     getFileByPath(body);
@@ -78,11 +78,11 @@ async function deleteFile({ commandId, fileId, webSocket }) {
 }
 
 function getFileById({ commandId, fileId, uploadPath, webSocket }) {
-  unknownMessage('getFileById', commandId, webSocket);
+  unknownMessage('getFileById', { commandId, webSocket });
 }
 
 function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {
-  unknownMessage('getFileByPath', commandId, webSocket);
+  unknownMessage('getFileByPath', { commandId, webSocket });
 }
 
 async function postNewPlaylist({ commandId, playList, webSocket }) {

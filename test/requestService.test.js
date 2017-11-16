@@ -323,7 +323,7 @@ describe('requestService tests', () => {
 
     const response = responseService.commandAckResponse('8cc65502-6dc1-4762-bcf1-ca459a503512');
 
-    it('For PostNewFile message call postNewFile, fileHandler, get promise and send fileDownloadedResponse', () => {
+    it('For SetDefaultContent call insertDefaultContent in db service, resolve and send commandAck response', () => {
       const databaseServiceMock = {
         insertDefaultContent: () => Promise.resolve(),
       };
@@ -370,7 +370,7 @@ describe('requestService tests', () => {
 
     const response = responseService.commandErrorResponse('8cc65502-6dc1-4762-bcf1-ca459a503512', 'error');
 
-    it('For PostNewFile message call postNewFile, fileHandler, get promise and send fileDownloadedResponse', () => {
+    it('For SetDefaultContent call insertDefaultContent in db service,reject on error and send commandError response', () => {
       const databaseServiceMock = {
         insertDefaultContent: () => Promise.reject('error'),
       };
@@ -416,7 +416,7 @@ describe('requestService tests', () => {
 
     const response = responseService.getFilesResponse('8cc65502-6dc1-4762-bcf1-ca459a503512', '[]');
 
-    it('For PostNewFile message call postNewFile, fileHandler, get promise and send fileDownloadedResponse', () => {
+    it('For GetFiles message call getResourcesDetails from fileHandler, expect resolve and send getFilesResponse', () => {
       const fileHandlerMock = {
         getResourcesDetails: () => Promise.resolve('[]'),
       };
@@ -462,7 +462,7 @@ describe('requestService tests', () => {
 
     const response = responseService.commandErrorResponse('8cc65502-6dc1-4762-bcf1-ca459a503512', 'error');
 
-    it('For PostNewFile message call postNewFile, fileHandler, get promise and send fileDownloadedResponse', () => {
+    it('For GetFiles message call getResourcesDetails from fileHandler, expect reject on error and send commandError response', () => {
       const fileHandlerMock = {
         getResourcesDetails: () => Promise.reject('error'),
       };
@@ -474,6 +474,147 @@ describe('requestService tests', () => {
       return requestService.handleMessage(message, webSocket).then(() => {
         chai.assert.equal(latestArgs, response);
       });
+    });
+  });
+
+  describe('processMessageRequest - DeleteFile pass', () => {
+    let webSocket;
+    let latestArgs;
+
+    afterEach(() => {
+      mockery.disable();
+      mockery.deregisterAll();
+    });
+
+    beforeEach(() => {
+      mockery.enable({
+        warnOnReplace: false,
+        warnOnUnregistered: false,
+        useCleanCache: true,
+      });
+      webSocket = {};
+      const mySpy = (args) => {
+        latestArgs = args;
+      };
+      webSocket.send = mySpy;
+      latestArgs = null;
+    });
+
+    const message = JSON.stringify({
+      DeleteFile: {
+        commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
+        fileId: 'pics/smutnazaba.jpg',
+      },
+    });
+
+    const response = responseService.commandAckResponse('8cc65502-6dc1-4762-bcf1-ca459a503512', 'error');
+
+    it('For DeleteFile message call deleteFile from fileHandler, expect promise and send commandAck response', () => {
+      const fileHandlerMock = {
+        deleteFile: () => Promise.resolve(),
+      };
+
+      mockery.registerMock('../utils/fileHandler', fileHandlerMock);
+
+      const requestService = require('../src/server/services/requestService');
+
+      return requestService.handleMessage(message, webSocket).then(() => {
+        chai.assert.equal(latestArgs, response);
+      });
+    });
+  });
+
+  describe('processMessageRequest - GetFile unimplemented', () => {
+    let webSocket;
+    let latestArgs;
+
+    afterEach(() => {
+      mockery.disable();
+      mockery.deregisterAll();
+    });
+
+    beforeEach(() => {
+      mockery.enable({
+        warnOnReplace: false,
+        warnOnUnregistered: false,
+        useCleanCache: true,
+      });
+      webSocket = {};
+      const mySpy = (args) => {
+        latestArgs = args;
+      };
+      webSocket.send = mySpy;
+      latestArgs = null;
+    });
+
+    const message = JSON.stringify({
+      GetFile: {
+        commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
+        fileId: 'smutnazaba.jpg',
+        uploadPath: 'google.com/here',
+      },
+    });
+
+    const response = responseService.unknownMessage('getFileById', '8cc65502-6dc1-4762-bcf1-ca459a503512');
+
+    it('For unhandled GetFile expect unknown message response', () => {
+      const fileHandlerMock = {
+        deleteFile: () => Promise.resolve(),
+      };
+
+      mockery.registerMock('../utils/fileHandler', fileHandlerMock);
+
+      const requestService = require('../src/server/services/requestService');
+
+      requestService.handleMessage(message, webSocket);
+      chai.assert.equal(latestArgs, response);
+    });
+  });
+
+  describe('processMessageRequest - GetFile overloaded unimplemented', () => {
+    let webSocket;
+    let latestArgs;
+
+    afterEach(() => {
+      mockery.disable();
+      mockery.deregisterAll();
+    });
+
+    beforeEach(() => {
+      mockery.enable({
+        warnOnReplace: false,
+        warnOnUnregistered: false,
+        useCleanCache: true,
+      });
+      webSocket = {};
+      const mySpy = (args) => {
+        latestArgs = args;
+      };
+      webSocket.send = mySpy;
+      latestArgs = null;
+    });
+
+    const message = JSON.stringify({
+      GetFile: {
+        commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
+        localPath: 'smutnazaba.jpg',
+        uploadPath: 'google.com/here',
+      },
+    });
+
+    const response = responseService.unknownMessage('getFileByPath', '8cc65502-6dc1-4762-bcf1-ca459a503512');
+
+    it('For unhandled GetFile expect unknown message response', () => {
+      const fileHandlerMock = {
+        deleteFile: () => Promise.resolve(),
+      };
+
+      mockery.registerMock('../utils/fileHandler', fileHandlerMock);
+
+      const requestService = require('../src/server/services/requestService');
+
+      requestService.handleMessage(message, webSocket);
+      chai.assert.equal(latestArgs, response);
     });
   });
 
