@@ -71,7 +71,7 @@ async function getFileDetails(fileId) {
       const mimeType = path.extname(fileId);
 
       resolve({
-        fileId: path.basename(fileId),
+        fileId: fileId.replace(config.CONTENT_ADDRESS, ''),
         localPath: fileId,
         transferredSize: stats.size,
         mimeType,
@@ -96,7 +96,8 @@ async function getResourcesDetails() {
 
 function deleteFile(filePath) {
   return new Promise((resolve, reject) => {
-    fs.unlink(filePath, (fsErr) => {
+    const pathToFile = path.join(config.CONTENT_ADDRESS, filePath);
+    fs.unlink(pathToFile, (fsErr) => {
       if (fsErr) {
         console.log(`Error during deleting file ${filePath}: ${fsErr}`);
         reject(fsErr);

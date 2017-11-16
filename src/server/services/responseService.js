@@ -8,6 +8,16 @@ function fileDownloadedResponse(commandId, fileId, transferredSize) {
   });
 }
 
+function fileUploadedResonse(commandId, fileId, uploadPath) {
+  return JSON.stringify({
+    FileUploaded: {
+      commandId,
+      fileId,
+      uploadPath,
+    },
+  });
+}
+
 function playerPlayListResponse(commandId, playlist) {
   return JSON.stringify({
     PlayerPlaylist: {

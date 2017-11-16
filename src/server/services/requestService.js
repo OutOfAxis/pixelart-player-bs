@@ -77,9 +77,13 @@ async function deleteFile({ commandId, fileId, webSocket }) {
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
-function getFileById({ commandId, fileId, uploadPath, webSocket }) {}
+function getFileById({ commandId, fileId, uploadPath, webSocket }) {
+  unknownMessage('getFileById', commandId, webSocket);
+}
 
-function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {}
+function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {
+  unknownMessage('getFileByPath', commandId, webSocket);
+}
 
 async function postNewPlaylist({ commandId, playList, webSocket }) {
   try {
