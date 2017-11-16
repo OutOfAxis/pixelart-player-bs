@@ -1,6 +1,7 @@
 const fileHandler = require('../utils/fileHandler');
 const responseService = require('./responseService');
 const databaseService = require('./databaseService');
+const errorService = require('./requestErrorService');
 const config = require('../utils/config');
 
 function handleMessage(content, webSocket) {
@@ -12,7 +13,7 @@ function handleMessage(content, webSocket) {
   return processMessageRequest(messageName, message[messageName], webSocket);
 }
 
-function processMessageRequest(type, body) {
+async function processMessageRequest(type, body) {
   const types = {
     PostNewFile: postNewFile,
     GetFiles: getFiles,
@@ -28,8 +29,11 @@ function processMessageRequest(type, body) {
   if (!types[type]) {
     return unknownMessage(type, body);
   }
-
-  return types[type](body);
+  try {
+    return await types[type](body);
+  } catch (error) {
+    return errorService.handleError(type, body, error);
+  }
 }
 
 function selectGetFile(body) {
@@ -41,39 +45,21 @@ function selectGetFile(body) {
 }
 
 async function postNewFile({ commandId, fileId, sourcePath, webSocket }) {
-  let transferredFileStats;
-  try {
-    await fileHandler.downloadFile(fileId, sourcePath);
-    transferredFileStats = await fileHandler.getFileDetails(config.CONTENT_ADDRESS + fileId);
-  } catch (error) {
-    console.log(error);
-    webSocket.send(responseService.fileDownloadFailedResponse(commandId, fileId, error));
-    return;
-  }
+  await fileHandler.downloadFile(fileId, sourcePath);
+  const transferredFileStats = await fileHandler.getFileDetails(config.CONTENT_ADDRESS + fileId);
 
   webSocket.send(responseService.fileDownloadedResponse(commandId, fileId, transferredFileStats.transferredSize));
 }
 
 async function getFiles({ commandId, webSocket }) {
-  let content = [];
-  try {
-    content = await fileHandler.getResourcesDetails();
-  } catch (error) {
-    console.log(error);
-    webSocket.send(responseService.commandErrorResponse(commandId, error));
-
-    return;
-  }
+  const content = await fileHandler.getResourcesDetails();
 
   webSocket.send(responseService.getFilesResponse(commandId, content));
 }
 
 async function deleteFile({ commandId, fileId, webSocket }) {
-  try {
-    await fileHandler.deleteFile(fileId);
-  } catch (error) {
-    console.log(error);
-  }
+  await fileHandler.deleteFile(fileId);
+
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
@@ -86,51 +72,26 @@ function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {
 }
 
 async function postNewPlaylist({ commandId, playList, webSocket }) {
-  try {
-    await fileHandler.createNewFile(config.PLAYLIST_ADDRESS, playList);
-  } catch (error) {
-    console.log(error);
-
-    return;
-  }
+  await fileHandler.createNewFile(config.PLAYLIST_ADDRESS, playList);
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
 async function getPlaylist({ commandId, webSocket }) {
   let playList = '[]';
-  try {
-    playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
-  } catch (error) {
-    if (error === 'ENOENT') {
-      playList = '[]';
-    }
-  }
+  playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
 
   webSocket.send(responseService.playerPlayListResponse(commandId, playList));
 }
 
 async function setDefaultContent({ commandId, uri, webSocket }) {
-  try {
-    await databaseService.insertDefaultContent(uri);
-  } catch (error) {
-    console.log(error);
-    webSocket.send(responseService.commandErrorResponse(commandId, error));
-
-    return;
-  }
+  await databaseService.insertDefaultContent(uri);
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
 function playDefault({ commandId, webSocket }) {
-  try {
-    console.log('Here we play default content');
-  } catch (error) {
-    webSocket.send(responseService.commandErrorResponse(commandId, error));
-
-    return;
-  }
+  console.log('Here we play default content');
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }

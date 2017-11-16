@@ -41,12 +41,13 @@ describe('requestService tests', () => {
       },
     });
 
-    const response = responseService.fileDownloadFailedResponse('8cc65502-6dc1-4762-bcf1-ca459a503512', fileId, 'error');
+    const error = new Error('error');
+    const response = responseService.fileDownloadFailedResponse({ commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512', fileId }, error.message);
 
     it('For PostNewFile fail message, should get fileDownloadFailedResponse', () => {
       const fileHandlerMock = {
-        downloadFile: () => Promise.reject('error'),
-        getFileDetails: () => Promise.reject('error'),
+        downloadFile: () => Promise.reject(error),
+        getFileDetails: () => Promise.reject(error),
       };
 
       mockery.registerMock('../utils/fileHandler', fileHandlerMock);
@@ -128,6 +129,7 @@ describe('requestService tests', () => {
       latestArgs = null;
     });
 
+    const error = new Error('error');
     const message = JSON.stringify({
       GetPlaylist: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -139,7 +141,7 @@ describe('requestService tests', () => {
     it('For GetPlaylist message should call getPlaylist and send playerPlayListResponse if file does not exist', () => {
       const fileHandlerMock = {
         createNewFile: () => Promise.resolve(),
-        getFileContent: () => Promise.reject('ENOENT'),
+        getFileContent: () => Promise.reject(error),
       };
 
       mockery.registerMock('../utils/fileHandler', fileHandlerMock);
@@ -360,7 +362,7 @@ describe('requestService tests', () => {
       webSocket.send = mySpy;
       latestArgs = null;
     });
-
+    const error = new Error('error');
     const message = JSON.stringify({
       SetDefaultContent: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -368,11 +370,11 @@ describe('requestService tests', () => {
       },
     });
 
-    const response = responseService.commandErrorResponse('8cc65502-6dc1-4762-bcf1-ca459a503512', 'error');
+    const response = responseService.commandErrorResponse({ commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512' }, error.message);
 
     it('For SetDefaultContent call insertDefaultContent in db service,reject on error and send commandError response', () => {
       const databaseServiceMock = {
-        insertDefaultContent: () => Promise.reject('error'),
+        insertDefaultContent: () => Promise.reject(error),
       };
 
       mockery.registerMock('./databaseService', databaseServiceMock);
@@ -460,11 +462,12 @@ describe('requestService tests', () => {
       },
     });
 
-    const response = responseService.commandErrorResponse('8cc65502-6dc1-4762-bcf1-ca459a503512', 'error');
+    const error = new Error('error');
+    const response = responseService.commandErrorResponse({ commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512' }, error.message);
 
     it('For GetFiles message call getResourcesDetails from fileHandler, expect reject on error and send commandError response', () => {
       const fileHandlerMock = {
-        getResourcesDetails: () => Promise.reject('error'),
+        getResourcesDetails: () => Promise.reject(error),
       };
 
       mockery.registerMock('../utils/fileHandler', fileHandlerMock);

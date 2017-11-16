@@ -70,10 +70,10 @@ function insertConfiguration(response) {
   return executeQuery(insertQuery);
 }
 
-function insertDefaultContent(response) {
+async function insertDefaultContent(response) {
   const insertQuery = prepareInsertDefaultContentQuery(response);
 
-  return executeQuery(insertQuery);
+  return await executeQuery(insertQuery);
 }
 
 async function getConfiguration() {

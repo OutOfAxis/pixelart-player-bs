@@ -99,7 +99,6 @@ function deleteFile(filePath) {
     const pathToFile = path.join(config.CONTENT_ADDRESS, filePath);
     fs.unlink(pathToFile, (fsErr) => {
       if (fsErr) {
-        console.log(`Error during deleting file ${filePath}: ${fsErr}`);
         reject(fsErr);
         return;
 
