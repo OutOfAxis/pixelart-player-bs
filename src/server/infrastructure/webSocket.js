@@ -2,6 +2,7 @@ const databaseService = require('../services/databaseService');
 const messagingService = require('../services/requestService');
 const encryption = require('../utils/encryption');
 const communication = require('../utils/config');
+const logger = require('../utils/logger').logger;
 
 const WebSocket = require('ws');
 
@@ -17,7 +18,7 @@ async function establishConnectionWithWebSocket() {
   });
 
   ws.on('open', function open() {
-    console.log('Connection to WebSocket has been established.');
+    logger.info('Connection to WebSocket has been established.');
   });
 
   ws.on('message', function incoming(data) {

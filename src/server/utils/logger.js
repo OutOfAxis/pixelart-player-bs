@@ -2,7 +2,7 @@ const log4js = require('log4js');
 
 log4js.configure({
   appenders: {
-    everything: {
+    file: {
       type: 'file',
       filename: 'all-the-logs.log',
     },
@@ -13,7 +13,7 @@ log4js.configure({
     },
   },
   categories: {
-    default: { appenders: ['everything', 'default'], level: 'debug' },
+    default: { appenders: ['file', 'default'], level: 'debug' },
   },
 });
 
