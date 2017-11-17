@@ -11,13 +11,14 @@ function handleError(type, body, error) {
     UnknownMessage: responseService.unknownMessage,
   };
 
+  logger.error(error);
+
   if (type === 'GetPlaylist') {
     return body.webSocket.send(errorTypes[type](body.commandId, '[]'));
   } else if (errorTypes[type]) {
     return body.webSocket.send(errorTypes[type](body, error.message));
   }
-
-  logger.error(error);
+  return body.webSocket.send(errorTypes.UnknownMessage(body, error.message));
 }
 
 module.exports = {

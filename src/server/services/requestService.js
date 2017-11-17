@@ -79,8 +79,7 @@ async function postNewPlaylist({ commandId, playList, webSocket }) {
 }
 
 async function getPlaylist({ commandId, webSocket }) {
-  let playList = '[]';
-  playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
+  const playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
 
   webSocket.send(responseService.playerPlayListResponse(commandId, playList));
 }
