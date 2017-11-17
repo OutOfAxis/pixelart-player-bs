@@ -1,4 +1,5 @@
 const responseService = require('./responseService');
+const logger = require('../utils/logger').logger;
 
 function handleError(type, body, error) {
   const errorTypes = {
@@ -16,7 +17,7 @@ function handleError(type, body, error) {
     return body.webSocket.send(errorTypes[type](body, error.message));
   }
 
-  console.log(error);
+  logger.error(error);
 }
 
 module.exports = {

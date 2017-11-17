@@ -5,6 +5,7 @@ const path = require('path');
 const recursive = require('recursive-readdir');
 
 const config = require('../utils/config');
+const logger = require('./logger').logger;
 
 async function downloadFile(fileId, sourcePath) {
   const filePath = path.join(config.CONTENT_ADDRESS, fileId);
@@ -35,7 +36,7 @@ function createNewFile(filePath, content) {
   return new Promise((resolve, reject) => {
     fs.writeFile(filePath, content, (error) => {
       if (error) {
-        console.log(error);
+        logger.error(error);
         reject(error);
         return;
       }
@@ -84,7 +85,7 @@ async function getResourcesDetails() {
   return new Promise((resolve, reject) => {
     recursive(config.CONTENT_ADDRESS, (error, files) => {
       if (error) {
-        console.log(error);
+        logger.error(error);
         reject(error);
         return;
       }
@@ -112,7 +113,7 @@ function initDirectories(dirPath) {
   return new Promise((resolve, reject) => {
     mkdirp(dirPath, (error) => {
       if (error) {
-        console.log(`Error during creating directory: ${error}`);
+        logger.error(`Error during creating directory: ${error}`);
         reject(error);
         return;
       }

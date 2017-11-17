@@ -3,6 +3,7 @@ const communication = require('../utils/config');
 const co = require('co');
 const requestPromise = require('request-promise');
 const uuid = require('uuid-v4');
+const logger = require('../utils/logger').logger;
 
 function getAndSetUniversallyUniqueIdentifier() {
   const identifier = uuid();
@@ -13,7 +14,7 @@ function getAndSetUniversallyUniqueIdentifier() {
 function registerDevice() {
   return databaseService.getDeviceIdentifier()
     .then((result) => {
-      console.log(result);
+      logger.info(result);
       if (result.length === 0) {
         return sendVerificationMessage();
       }
@@ -22,7 +23,7 @@ function registerDevice() {
 
 function sendVerificationMessage(token) {
   return co(function* () {
-    token = '80897db';
+    token = '32067af';
 
     const options = {
       method: 'PUT',
@@ -37,7 +38,7 @@ function sendVerificationMessage(token) {
       const response = JSON.parse(yield requestPromise(options));
       return databaseService.insertConfiguration(response);
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   });
 }
