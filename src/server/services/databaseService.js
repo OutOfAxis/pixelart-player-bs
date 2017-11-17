@@ -52,6 +52,12 @@ function prepareInsertConfigurationQuery(response) {
   return (`${queries.QUERY_INSERT_CONFIGURATION }'${encodedConfiguration}' )`);
 }
 
+function prepareInsertDefaultContentQuery(response) {
+  const encodedDefaultContent = encryption.encode(JSON.stringify(response));
+
+  return (`${queries.QUERY_INSERT_DEFAULT_CONTENT }'${encodedDefaultContent}' )`);
+}
+
 function initializeDeviceIdentifier(identifier) {
   const query = `${queries.QUERY_INSERT_IDENTIFIER }'${identifier}' )`;
 
@@ -62,6 +68,12 @@ function insertConfiguration(response) {
   const insertQuery = prepareInsertConfigurationQuery(response);
 
   return executeQuery(insertQuery);
+}
+
+async function insertDefaultContent(response) {
+  const insertQuery = prepareInsertDefaultContentQuery(response);
+
+  return await executeQuery(insertQuery);
 }
 
 async function getConfiguration() {
@@ -79,4 +91,5 @@ module.exports = {
   initializeDeviceIdentifier,
   getConfiguration,
   getDeviceIdentifier,
+  insertDefaultContent,
 };

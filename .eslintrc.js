@@ -21,6 +21,7 @@ module.exports = {
       'describe': true,
       'before': true,
       'after': true,
+      'afterEach': true,
     },
     'rules': {
         /* Possible Errors */
@@ -227,7 +228,7 @@ module.exports = {
 
         /* Legacy */
         'max-depth': [0, 3],
-        'max-len': [2, 121, 2],
+        'max-len': [2, 168, 2],
         'max-params': ['error', 4],
         'max-statements': ['error', 50],
         'no-bitwise': 2,
@@ -244,6 +245,6 @@ module.exports = {
         'promise/no-callback-in-promise': 'warn',
         'promise/avoid-new': 'warn',
         'promise/prefer-await-to-then': 2,
-        'promise/prefer-await-to-callbacks': 2
+        'promise/prefer-await-to-callbacks': 1
     }
 };

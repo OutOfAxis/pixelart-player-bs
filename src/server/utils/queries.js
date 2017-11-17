@@ -4,6 +4,8 @@ const QUERY_GET_CONFIGURATION = 'SELECT value FROM Configuration WHERE key = \'C
 const QUERY_INSERT_CONFIGURATION = 'INSERT INTO Configuration(type, key, value) VALUES(\'JSON\', \'Configuration\', ';
 const QUERY_INSERT_IDENTIFIER = 'INSERT INTO Configuration(type, key, value) VALUES(\'UUID\', \'Identifier\', ';
 const QUERY_GET_IDENTIFIER = 'SELECT value FROM Configuration WHERE key = \'Identifier\'';
+const QUERY_INSERT_DEFAULT_CONTENT = 'INSERT INTO Configuration(type, key, value) VALUES(\'TEXT\', \'DefaultContent\', ';
+const QUERY_GET_DEFAULT_CONTENT = 'SELECT value FROM Configuration WHERE key = \'DefaultContent\'';
 
 
 module.exports = {
@@ -12,4 +14,6 @@ module.exports = {
   QUERY_INSERT_CONFIGURATION,
   QUERY_INSERT_IDENTIFIER,
   QUERY_GET_IDENTIFIER,
+  QUERY_INSERT_DEFAULT_CONTENT,
+  QUERY_GET_DEFAULT_CONTENT,
 };

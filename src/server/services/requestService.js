@@ -1,16 +1,19 @@
 const fileHandler = require('../utils/fileHandler');
 const responseService = require('./responseService');
+const databaseService = require('./databaseService');
+const errorService = require('./requestErrorService');
 const config = require('../utils/config');
 
 function handleMessage(content, webSocket) {
   const message = JSON.parse(content);
   const messageName = Object.getOwnPropertyNames(message)[0];
   message[messageName].webSocket = webSocket;
+  console.log(messageName);
 
   return processMessageRequest(messageName, message[messageName], webSocket);
 }
 
-function processMessageRequest(type, body) {
+async function processMessageRequest(type, body) {
   const types = {
     PostNewFile: postNewFile,
     GetFiles: getFiles,
@@ -26,54 +29,72 @@ function processMessageRequest(type, body) {
   if (!types[type]) {
     return unknownMessage(type, body);
   }
-
-  return types[type](body);
+  try {
+    return await types[type](body);
+  } catch (error) {
+    return errorService.handleError(type, body, error);
+  }
 }
 
 function selectGetFile(body) {
-  if (body.fielId) {
+  if (body.fileId) {
     getFileById(body);
   } else {
     getFileByPath(body);
   }
 }
 
-function postNewFile({ commandId, fileId, downloadPath, sourcePath, fileSize, webSocket }) {
-  fileHandler.downloadFile(fileId, downloadPath, sourcePath);
+async function postNewFile({ commandId, fileId, sourcePath, webSocket }) {
+  await fileHandler.downloadFile(fileId, sourcePath);
+  const transferredFileStats = await fileHandler.getFileDetails(config.CONTENT_ADDRESS + fileId);
+
+  webSocket.send(responseService.fileDownloadedResponse(commandId, fileId, transferredFileStats.transferredSize));
 }
 
-function getFiles({ commandId, webSocket }) {}
+async function getFiles({ commandId, webSocket }) {
+  const content = await fileHandler.getResourcesDetails();
 
-function deleteFile({ commandId, fileId, webSocket }) {}
+  webSocket.send(responseService.getFilesResponse(commandId, content));
+}
 
-function getFileById({ commandId, fileId, uploadPath, webSocket }) {}
+async function deleteFile({ commandId, fileId, webSocket }) {
+  await fileHandler.deleteFile(fileId);
 
-function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {}
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
+
+function getFileById({ commandId, fileId, uploadPath, webSocket }) {
+  unknownMessage('getFileById', { commandId, webSocket });
+}
+
+function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {
+  unknownMessage('getFileByPath', { commandId, webSocket });
+}
 
 async function postNewPlaylist({ commandId, playList, webSocket }) {
-  try {
-    await fileHandler.createNewFile(config.PLAYLIST_ADDRESS, playList);
-  } catch (error) {
-    console.log(error);
-  }
+  await fileHandler.createNewFile(config.PLAYLIST_ADDRESS, playList);
+
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
 async function getPlaylist({ commandId, webSocket }) {
   let playList = '[]';
-  try {
-    playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
-  } catch (error) {
-    if (error === 'ENOENT') {
-      playList = '[]';
-    }
-  }
+  playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
+
   webSocket.send(responseService.playerPlayListResponse(commandId, playList));
 }
 
-function setDefaultContent({ commandId, uri, webSocket }) {}
+async function setDefaultContent({ commandId, uri, webSocket }) {
+  await databaseService.insertDefaultContent(uri);
 
-function playDefault({ commandId, webSocket }) {}
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
+
+function playDefault({ commandId, webSocket }) {
+  console.log('Here we play default content');
+
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
 
 function setRecoverContent({ commandId, uri, webSocket }) {}
 
