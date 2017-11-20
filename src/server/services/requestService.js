@@ -3,12 +3,13 @@ const responseService = require('./responseService');
 const databaseService = require('./databaseService');
 const errorService = require('./requestErrorService');
 const config = require('../utils/config');
+const logger = require('../utils/logger').logger;
 
 function handleMessage(content, webSocket) {
   const message = JSON.parse(content);
   const messageName = Object.getOwnPropertyNames(message)[0];
   message[messageName].webSocket = webSocket;
-  console.log(messageName);
+  logger.info(messageName);
 
   return processMessageRequest(messageName, message[messageName], webSocket);
 }
@@ -64,11 +65,11 @@ async function deleteFile({ commandId, fileId, webSocket }) {
 }
 
 function getFileById({ commandId, fileId, uploadPath, webSocket }) {
-  unknownMessage('getFileById', { commandId, webSocket });
+  unknownMessage('getFileById', { commandId, webSocket }, fileId, uploadPath);
 }
 
 function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {
-  unknownMessage('getFileByPath', { commandId, webSocket });
+  unknownMessage('getFileByPath', { commandId, webSocket }, localPath, uploadPath);
 }
 
 async function postNewPlaylist({ commandId, playList, webSocket }) {
@@ -78,8 +79,7 @@ async function postNewPlaylist({ commandId, playList, webSocket }) {
 }
 
 async function getPlaylist({ commandId, webSocket }) {
-  let playList = '[]';
-  playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
+  const playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
 
   webSocket.send(responseService.playerPlayListResponse(commandId, playList));
 }
@@ -91,12 +91,14 @@ async function setDefaultContent({ commandId, uri, webSocket }) {
 }
 
 function playDefault({ commandId, webSocket }) {
-  console.log('Here we play default content');
+  logger.info('Here we play default content');
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
-function setRecoverContent({ commandId, uri, webSocket }) {}
+function setRecoverContent({ commandId, uri, webSocket }) {
+  webSocket.send(responseService.unknownMessage(uri, commandId));
+}
 
 function unknownMessage(type, { commandId, webSocket }) {
   webSocket.send(responseService.unknownMessage(type, commandId));

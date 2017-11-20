@@ -4,6 +4,7 @@ const communication = require('../utils/config');
 
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const logger = require('../utils/logger').logger;
 const dbPath = path.resolve(communication.DATABASE_ADDRESS, 'BrightPixel.db');
 
 function runPromifisiedQuery(dbContext, query) {
@@ -22,7 +23,7 @@ function closeDatabaseConnection(dbContext) {
   return new Promise((resolve, reject) => {
     dbContext.close(function(error) {
       if (error) {
-        console.error(error);
+        logger.error(error);
         reject(error);
         return;
       }

@@ -7,32 +7,33 @@ const chai = require('chai');
 const responseService = require('../src/server/services/responseService');
 
 describe('requestService tests', () => {
+  let webSocket;
+  let latestArgs;
+
+  afterEach(() => {
+    mockery.disable();
+    mockery.deregisterAll();
+  });
+
+  beforeEach(() => {
+    mockery.enable({
+      warnOnReplace: false,
+      warnOnUnregistered: false,
+      useCleanCache: true,
+    });
+
+    webSocket = {};
+
+    const mySpy = (args) => {
+      latestArgs = args;
+    };
+
+    webSocket.send = mySpy;
+    latestArgs = null;
+  });
 
   describe('processMessageRequest - PostNewFile fail', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const fileId = 'smutnazaba.jpg';
-
     const message = JSON.stringify({
       PostNewFile: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -61,28 +62,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - GetPlayList pass', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       GetPlaylist: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -107,28 +86,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - GetPlayList fail', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const error = new Error('error');
     const message = JSON.stringify({
       GetPlaylist: {
@@ -155,28 +112,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - Unknown message pass', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       'Revolve.pro': {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -193,28 +128,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - PostNewPlayList pass', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       'PostNewPlaylist': {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -241,28 +154,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - PostNewFile pass', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       PostNewFile: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -294,28 +185,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - SetDefaultContent pass', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       SetDefaultContent: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -341,27 +210,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - SetDefaultContent fail', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
     const error = new Error('error');
     const message = JSON.stringify({
       SetDefaultContent: {
@@ -388,28 +236,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - GetFiles pass', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       GetFiles: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -434,28 +260,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - GetFiles fail', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       GetFiles: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -481,28 +285,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - DeleteFile pass', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       DeleteFile: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -528,28 +310,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - GetFile unimplemented', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       GetFile: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
@@ -575,28 +335,6 @@ describe('requestService tests', () => {
   });
 
   describe('processMessageRequest - GetFile overloaded unimplemented', () => {
-    let webSocket;
-    let latestArgs;
-
-    afterEach(() => {
-      mockery.disable();
-      mockery.deregisterAll();
-    });
-
-    beforeEach(() => {
-      mockery.enable({
-        warnOnReplace: false,
-        warnOnUnregistered: false,
-        useCleanCache: true,
-      });
-      webSocket = {};
-      const mySpy = (args) => {
-        latestArgs = args;
-      };
-      webSocket.send = mySpy;
-      latestArgs = null;
-    });
-
     const message = JSON.stringify({
       GetFile: {
         commandId: '8cc65502-6dc1-4762-bcf1-ca459a503512',
