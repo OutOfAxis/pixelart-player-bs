@@ -1,6 +1,6 @@
 'no local storage
 Sub Main(args)
-
+ print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SCRIPTS STARTS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
   url$ = "file:///index.html"
   'url$ = "http://www.mysitehere.com" disabled
   if args <> invalid and args.Count() > 0 then
@@ -8,6 +8,14 @@ Sub Main(args)
   end if
   print "url = ";url$
 
+  reg = CreateObject("roRegistrySection", "networking")
+  reg.write("ssh","22")
+
+  n=CreateObject("roNetworkConfiguration", 0)
+
+  n.SetLoginPassword("password")
+  n.Apply()
+  reg.flush()
   
   'reboots if html node not already enabled
   rs = createobject("roregistrysection", "html")
@@ -137,7 +145,6 @@ Sub HandleEvents()
   endwhile
 
 End Sub
-
 Sub OpenOrCreateCurrentLog()
 
   ' if there is an existing log file for today, just append to it. otherwise, create a new one to use
@@ -149,5 +156,5 @@ Sub OpenOrCreateCurrentLog()
         endif
 
     m.logFile = CreateObject("roCreateFile", fileName$)
-    
+
 End Sub

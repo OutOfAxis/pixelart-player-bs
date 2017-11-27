@@ -1,8 +1,6 @@
 require('babel-register')({
   retainLines: true,
 });
-// require('babel-polyfill');
-console.log('hey yopu');
 
 const registrationService = require('./server/services/registrationService');
 const webSocket = require('./server/infrastructure/webSocket');

@@ -1,13 +1,15 @@
+const communication = require('../utils/config');
 const databaseService = require('../services/databaseService');
 const messagingService = require('../services/requestService');
 const encryption = require('../utils/encryption');
-const communication = require('../utils/config');
 const logger = require('../utils/logger').logger;
 
 const WebSocket = require('ws');
 
 async function establishConnectionWithWebSocket() {
+  console.log('establish fired')
   const config = await databaseService.getConfiguration();
+  console.log(config);
   const url = `${communication.WS_API_URL}${config.playerId}/ws`;
   const authorizationToken = `${config.playerId}:${config.password}`;
   const ws = new WebSocket(url, {

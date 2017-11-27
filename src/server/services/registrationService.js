@@ -14,16 +14,17 @@ function getAndSetUniversallyUniqueIdentifier() {
 function registerDevice() {
   return databaseService.getDeviceIdentifier()
     .then((result) => {
-      logger.info(result);
       if (result.length === 0) {
         return sendVerificationMessage();
       }
+    }).catch((err)=>{
+      logger.error(err);
     });
 }
 
 function sendVerificationMessage(token) {
   return co(function* () {
-    token = '32067af';
+    token = '3cfa6a5';
 
     const options = {
       method: 'PUT',
