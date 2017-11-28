@@ -7,9 +7,7 @@ const logger = require('../utils/logger').logger;
 const WebSocket = require('ws');
 
 async function establishConnectionWithWebSocket() {
-  console.log('establish fired')
   const config = await databaseService.getConfiguration();
-  console.log(config);
   const url = `${communication.WS_API_URL}${config.playerId}/ws`;
   const authorizationToken = `${config.playerId}:${config.password}`;
   const ws = new WebSocket(url, {
