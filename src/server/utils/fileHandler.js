@@ -47,6 +47,7 @@ function createNewFile(filePath, content) {
 }
 
 function getFileContent(filePath) {
+  console.log(filePath);
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf8', (error, data) => {
       if (error) {
@@ -56,7 +57,7 @@ function getFileContent(filePath) {
       if (!data) {
         data = '[]';
       }
-
+      console.log(data);
       resolve(data);
     });
   });
@@ -97,8 +98,7 @@ async function getResourcesDetails() {
 
 function deleteFile(filePath) {
   return new Promise((resolve, reject) => {
-    const pathToFile = path.join(config.CONTENT_ADDRESS, filePath);
-    fs.unlink(pathToFile, (fsErr) => {
+    fs.unlink(filePath, (fsErr) => {
       if (fsErr) {
         reject(fsErr);
         return;

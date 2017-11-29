@@ -1,7 +1,7 @@
 require('babel-register')({
   retainLines: true,
 });
-// require('babel-polyfill');
+//require('babel-polyfill');
 console.log('hey yopu');
 
 const registrationService = require('./server/services/registrationService');
@@ -18,3 +18,4 @@ logger.info('One');
   logger.info('4our');
   webSocket.establishConnectionWithWebSocket();
 })();
+

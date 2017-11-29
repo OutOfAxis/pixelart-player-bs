@@ -1,7 +1,9 @@
 'no local storage
 Sub Main(args)
  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SCRIPTS STARTS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  contentUrl$ = "file:///content/index.html"
   url$ = "file:///index.html"
+
   'url$ = "http://www.mysitehere.com" disabled
   if args <> invalid and args.Count() > 0 then
     url$ = args[0]
@@ -29,7 +31,7 @@ Sub Main(args)
 
   DoCanonicalInit()
 
-  CreateHtmlWidget(url$)
+  CreateHtmlWidget(url$, contentUrl$)
 
   HandleEvents()
 End Sub
@@ -68,7 +70,7 @@ Function DoCanonicalInit()
   gaa.hp.setPort(gaa.mp)
 
 End Function
-Sub CreateHtmlWidget(url$ as String)
+Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
 
   gaa =  GetGlobalAA()
   width=gaa.vm.GetResX()
@@ -93,6 +95,21 @@ Sub CreateHtmlWidget(url$ as String)
 
   gaa.htmlWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
   gaa.htmlWidget.Show()
+
+  r=CreateObject("roRectangle", 0,0, width, height)
+  is = {
+      port: 3000
+  }
+  config = {
+      nodejs_enabled: true
+      inspector_server: is
+      brightsign_js_objects_enabled: true
+      url: contentUrl$
+      storage_path: "SD:"
+      storage_quota: 1073741824
+  }
+  h=CreateObject("roHtmlWidget", r, config)
+  h.Show()
 
 End Sub
 Sub HandleEvents()

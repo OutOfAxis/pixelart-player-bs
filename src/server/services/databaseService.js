@@ -1,87 +1,67 @@
 
 console.log('eoooo');
 const encryption = require('../utils/encryption');
-const queries = require('../utils/queries');
 const communication = require('../utils/config');
+const fileHandler = require('../utils/fileHandler');
+const exists = require('exists-file');
 
 const path = require('path');
-const dbPath = path.resolve(communication.DATABASE_ADDRESS, 'BrightPixel.db');
-const dblite = require('dblite');
-const dataBase = dblite(dbPath);
+const dbPath = path.resolve(communication.DATABASE_ADDRESS, 'brightPixel.json');
+const defaultContentPath = path.resolve(communication.DATABASE_ADDRESS, 'defaultContent.json');
 
 const logger = require('../utils/logger').logger;
 
-function runPromifisiedQuery(dbContext, query) {
-  return new Promise((resolve, reject) => {
-    dbContext.query(query, function(error, rows) {
-      if (error) {
-        logger.error(error);
-        reject(error);
-        return;
-      }
-      resolve(rows);
-    });
-  });
-}
-
 async function initializeConnectionWithDataBase() {
-  await runPromifisiedQuery(dataBase, queries.QUERY_CREATE_CONFIGURATION);
+  let configuration = {
+    Configuration: {
+      id: null,
+      config: null,
+    },
+  };
+  let db = null;
 
-  return dataBase;
+  if (await exists(dbPath)) {
+    db = await fileHandler.getFileContent(dbPath);
+  }
+  if (db !== '[]' && db !== null) {
+    configuration = JSON.parse(db);
+  } else {
+    await fileHandler.createNewFile(dbPath, JSON.stringify(configuration));
+  }
+
+  return configuration;
+}
+async function initializeDeviceIdentifier(identifier) {
+  const configuration = await initializeConnectionWithDataBase();
+  configuration.Configuration.id = identifier;
+
+  await fileHandler.createNewFile(dbPath, JSON.stringify(configuration));
 }
 
-async function executeQuery(query) {
-  const db = await initializeConnectionWithDataBase();
-  const rows = await runPromifisiedQuery(db, query);
+async function insertConfiguration(identifier, config) {
+  const configuration = await initializeConnectionWithDataBase();
 
-  return rows;
-}
-
-function prepareInsertConfigurationQuery(response) {
-  const encodedConfiguration = encryption.encode(JSON.stringify(response));
-
-  return (`${queries.QUERY_INSERT_CONFIGURATION }'${encodedConfiguration}' )`);
-}
-
-function prepareInsertDefaultContentQuery(response) {
-  const encodedDefaultContent = encryption.encode(JSON.stringify(response));
-
-  return (`${queries.QUERY_INSERT_DEFAULT_CONTENT }'${encodedDefaultContent}' )`);
-}
-
-function initializeDeviceIdentifier(identifier) {
-  const query = `${queries.QUERY_INSERT_IDENTIFIER }'${identifier}' )`;
-
-  return executeQuery(query);
-}
-
-function insertConfiguration(response) {
-  const insertQuery = prepareInsertConfigurationQuery(response);
-
-  return executeQuery(insertQuery);
-}
-
-async function insertDefaultContent(response) {
-  const insertQuery = prepareInsertDefaultContentQuery(response);
-
-  return await executeQuery(insertQuery);
+  if (identifier !== null) {
+    configuration.Configuration.id = identifier;
+  }
+  configuration.Configuration.config = config;
+  await fileHandler.createNewFile(dbPath, JSON.stringify(configuration));
 }
 
 async function getConfiguration() {
-  const rows = await executeQuery(queries.QUERY_GET_CONFIGURATION);
-  console.log(rows);
+  const config = await initializeConnectionWithDataBase();
 
-  return JSON.parse(encryption.decode(rows));
+  return config.Configuration;
 }
 
-function getDeviceIdentifier() {
-  return executeQuery(queries.QUERY_GET_IDENTIFIER);
+async function insertDefaultContent(response) {
+  await fileHandler.createNewFile(defaultContentPath, response);
 }
+
 
 module.exports = {
   insertConfiguration,
   initializeDeviceIdentifier,
   getConfiguration,
-  getDeviceIdentifier,
   insertDefaultContent,
 };

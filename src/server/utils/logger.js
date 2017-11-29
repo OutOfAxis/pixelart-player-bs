@@ -4,7 +4,7 @@ log4js.configure({
   appenders: {
     file: {
       type: 'file',
-      filename: 'all-the-logs.log',
+      filename: '/storage/sd/all-the-logs.log',
     },
     default: {
       'type': 'console',

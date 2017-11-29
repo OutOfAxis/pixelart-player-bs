@@ -129,3 +129,5 @@ dist
 
 # Temps
 tmp
+*.json
+content

@@ -10,12 +10,10 @@
   </style>
   <script>
     var storagePrefix = '/storage/sd';
-    var app = require(storagePrefix + '/index.js');
-    app.run();
-
+    require(storagePrefix + '/index.js');
   </script>
 </head>
-<body onload="displayMessage()">
+<body>
 <div id='root'></div>
 </body>
 </html>

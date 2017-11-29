@@ -7,9 +7,9 @@ const logger = require('../utils/logger').logger;
 const WebSocket = require('ws');
 
 async function establishConnectionWithWebSocket() {
-  const config = await databaseService.getConfiguration();
-  const url = `${communication.WS_API_URL}${config.playerId}/ws`;
-  const authorizationToken = `${config.playerId}:${config.password}`;
+  const configuration = await databaseService.getConfiguration();
+  const url = `${communication.WS_API_URL}${configuration.config.playerId}/ws`;
+  const authorizationToken = `${configuration.config.playerId}:${configuration.config.password}`;
   const ws = new WebSocket(url, {
     perMessageDeflate: false,
     headers: {
