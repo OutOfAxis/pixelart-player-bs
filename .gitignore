@@ -129,5 +129,6 @@ dist
 
 # Temps
 tmp
-*.json
+brightPixel.json
+defaultContent.json
 content
