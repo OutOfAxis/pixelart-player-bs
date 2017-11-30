@@ -1,6 +1,3 @@
-
-console.log('eoooo');
-const encryption = require('../utils/encryption');
 const communication = require('../utils/config');
 const fileHandler = require('../utils/fileHandler');
 const exists = require('exists-file');
@@ -8,8 +5,6 @@ const exists = require('exists-file');
 const path = require('path');
 const dbPath = path.resolve(communication.DATABASE_ADDRESS, 'brightPixel.json');
 const defaultContentPath = path.resolve(communication.DATABASE_ADDRESS, 'defaultContent.json');
-
-const logger = require('../utils/logger').logger;
 
 async function initializeConnectionWithDataBase() {
   let configuration = {

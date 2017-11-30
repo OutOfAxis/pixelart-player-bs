@@ -72,7 +72,32 @@ Function DoCanonicalInit()
 End Function
 Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
 
-  gaa =  GetGlobalAA()
+  ga =  GetGlobalAA()
+  width=ga.vm.GetResX()
+  height=ga.vm.GetResY()
+  rect=CreateObject("roRectangle", 0, 0, width, height)
+
+  'new node 5-16-17
+  is = {
+      port: 2998
+  }
+  config = {
+        nodejs_enabled: true
+        inspector_server: is
+        brightsign_js_objects_enabled: true
+    focus_enabled: true
+    javascript_enabled: true
+    url: url$
+    storage_path: "SD:"
+    storage_quota: 1073741824
+  }
+  'end new
+
+  ga.nodeWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
+  ga.nodeWidget.Show()
+
+
+ gaa =  GetGlobalAA()
   width=gaa.vm.GetResX()
   height=gaa.vm.GetResY()
   rect=CreateObject("roRectangle", 0, 0, width, height)
@@ -87,7 +112,7 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
         brightsign_js_objects_enabled: true
     focus_enabled: true
     javascript_enabled: true
-    url: url$
+    url: contentUrl$
     storage_path: "SD:"
     storage_quota: 1073741824
   }
@@ -95,21 +120,6 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
 
   gaa.htmlWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
   gaa.htmlWidget.Show()
-
-  r=CreateObject("roRectangle", 0,0, width, height)
-  is = {
-      port: 3000
-  }
-  config = {
-      nodejs_enabled: true
-      inspector_server: is
-      brightsign_js_objects_enabled: true
-      url: contentUrl$
-      storage_path: "SD:"
-      storage_quota: 1073741824
-  }
-  h=CreateObject("roHtmlWidget", r, config)
-  h.Show()
 
 End Sub
 Sub HandleEvents()
@@ -155,6 +165,7 @@ Sub HandleEvents()
     if receivedIpAddr and receivedLoadFinished then
       print "=== BS: OK to show HTML, showing widget now"
       gaa.htmlWidget.Show()
+      gaa.nodeWidget.Show()
       gaa.htmlWidget.PostJSMessage({msgtype:"htmlloaded"})
       receivedIpAddr = false
       receivedLoadFinished = false

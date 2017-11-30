@@ -57,7 +57,7 @@ function getFileContent(filePath) {
       if (!data) {
         data = '[]';
       }
-      console.log(data);
+
       resolve(data);
     });
   });
@@ -91,6 +91,7 @@ async function getResourcesDetails() {
         return;
       }
       const promises = files.map((file) => getFileDetails(file));
+
       resolve(Promise.all(promises));
     });
   });
@@ -117,6 +118,7 @@ function initDirectories(dirPath) {
         reject(error);
         return;
       }
+
       resolve();
     });
   });
