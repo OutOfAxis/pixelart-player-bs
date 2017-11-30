@@ -129,6 +129,7 @@ dist
 
 # Temps
 tmp
+playlist.json
 brightPixel.json
 defaultContent.json
 content
