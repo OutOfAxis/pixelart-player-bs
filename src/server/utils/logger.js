@@ -1,10 +1,11 @@
 const log4js = require('log4js');
+const config = require('./config');
 
 log4js.configure({
   appenders: {
     file: {
       type: 'file',
-      filename: 'all-the-logs.log',
+      filename: `/storage/sd/all-the-logs.log`,
     },
     default: {
       'type': 'console',

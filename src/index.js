@@ -1,6 +1,7 @@
 require('babel-register')({
   retainLines: true,
 });
+require('babel-polyfill');
 
 const registrationService = require('./server/services/registrationService');
 const webSocket = require('./server/infrastructure/webSocket');
@@ -12,3 +13,4 @@ const config = require('./server/utils/config');
   await registrationService.registerDevice();
   webSocket.establishConnectionWithWebSocket();
 })();
+

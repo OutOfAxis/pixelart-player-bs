@@ -90,6 +90,7 @@ async function getResourcesDetails() {
         return;
       }
       const promises = files.map((file) => getFileDetails(file));
+
       resolve(Promise.all(promises));
     });
   });
@@ -97,8 +98,7 @@ async function getResourcesDetails() {
 
 function deleteFile(filePath) {
   return new Promise((resolve, reject) => {
-    const pathToFile = path.join(config.CONTENT_ADDRESS, filePath);
-    fs.unlink(pathToFile, (fsErr) => {
+    fs.unlink(filePath, (fsErr) => {
       if (fsErr) {
         reject(fsErr);
         return;
@@ -117,6 +117,7 @@ function initDirectories(dirPath) {
         reject(error);
         return;
       }
+
       resolve();
     });
   });

@@ -12,19 +12,19 @@ function getAndSetUniversallyUniqueIdentifier() {
 }
 
 function registerDevice() {
-  return databaseService.getDeviceIdentifier()
+  return databaseService.getConfiguration()
     .then((result) => {
-      logger.info(result);
-      if (result.length === 0) {
+      if (result.config === null || result.config.playerId === null) {
         return sendVerificationMessage();
       }
+    }).catch((err)=>{
+      logger.error(err);
     });
 }
 
 function sendVerificationMessage(token) {
   return co(function* () {
-    token = '32067af';
-
+    token = 'b2d2d7a';
     const options = {
       method: 'PUT',
       uri: `${communication.REST_API_URL}${token}`,
@@ -36,7 +36,7 @@ function sendVerificationMessage(token) {
 
     try {
       const response = JSON.parse(yield requestPromise(options));
-      return databaseService.insertConfiguration(response);
+      return databaseService.insertConfiguration(null, response);
     } catch (error) {
       logger.error(error);
     }

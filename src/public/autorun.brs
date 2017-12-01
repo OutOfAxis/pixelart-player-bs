@@ -1,13 +1,23 @@
 'no local storage
 Sub Main(args)
-
+ print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SCRIPTS STARTS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+  contentUrl$ = "file:///content/index.html"
   url$ = "file:///index.html"
+
   'url$ = "http://www.mysitehere.com" disabled
   if args <> invalid and args.Count() > 0 then
     url$ = args[0]
   end if
   print "url = ";url$
 
+  reg = CreateObject("roRegistrySection", "networking")
+  reg.write("ssh","22")
+
+  n=CreateObject("roNetworkConfiguration", 0)
+
+  n.SetLoginPassword("password")
+  n.Apply()
+  reg.flush()
   
   'reboots if html node not already enabled
   rs = createobject("roregistrysection", "html")
@@ -21,7 +31,7 @@ Sub Main(args)
 
   DoCanonicalInit()
 
-  CreateHtmlWidget(url$)
+  CreateHtmlWidget(url$, contentUrl$)
 
   HandleEvents()
 End Sub
@@ -60,16 +70,16 @@ Function DoCanonicalInit()
   gaa.hp.setPort(gaa.mp)
 
 End Function
-Sub CreateHtmlWidget(url$ as String)
+Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
 
-  gaa =  GetGlobalAA()
-  width=gaa.vm.GetResX()
-  height=gaa.vm.GetResY()
+  ga =  GetGlobalAA()
+  width=ga.vm.GetResX()
+  height=ga.vm.GetResY()
   rect=CreateObject("roRectangle", 0, 0, width, height)
 
   'new node 5-16-17
   is = {
-      port: 2999
+      port: 2998
   }
   config = {
         nodejs_enabled: true
@@ -83,8 +93,29 @@ Sub CreateHtmlWidget(url$ as String)
   }
   'end new
 
-  gaa.htmlWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
-  gaa.htmlWidget.Show()
+  ga.nodeWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
+  ga.nodeWidget.Show()
+
+  rect=CreateObject("roRectangle", 0, 0, width, height)
+
+  'new node 5-16-17
+  is = {
+      port: 2999
+  }
+  config = {
+        nodejs_enabled: true
+        inspector_server: is
+        brightsign_js_objects_enabled: true
+    focus_enabled: true
+    javascript_enabled: true
+    url: contentUrl$
+    storage_path: "SD:"
+    storage_quota: 1073741824
+  }
+  'end new
+
+  ga.htmlWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
+  ga.htmlWidget.Show()
 
 End Sub
 Sub HandleEvents()
@@ -130,6 +161,7 @@ Sub HandleEvents()
     if receivedIpAddr and receivedLoadFinished then
       print "=== BS: OK to show HTML, showing widget now"
       gaa.htmlWidget.Show()
+      gaa.nodeWidget.Show()
       gaa.htmlWidget.PostJSMessage({msgtype:"htmlloaded"})
       receivedIpAddr = false
       receivedLoadFinished = false
@@ -137,7 +169,6 @@ Sub HandleEvents()
   endwhile
 
 End Sub
-
 Sub OpenOrCreateCurrentLog()
 
   ' if there is an existing log file for today, just append to it. otherwise, create a new one to use
@@ -149,5 +180,5 @@ Sub OpenOrCreateCurrentLog()
         endif
 
     m.logFile = CreateObject("roCreateFile", fileName$)
-    
+
 End Sub
