@@ -18,7 +18,6 @@ function registerDevice() {
         return sendVerificationMessage();
       }
     }).catch((err)=>{
-      console.log(err);
       logger.error(err);
     });
 }
@@ -26,7 +25,6 @@ function registerDevice() {
 function sendVerificationMessage(token) {
   return co(function* () {
     token = 'b2d2d7a';
-    console.log('verify');
     const options = {
       method: 'PUT',
       uri: `${communication.REST_API_URL}${token}`,

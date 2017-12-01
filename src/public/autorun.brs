@@ -96,10 +96,6 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
   ga.nodeWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
   ga.nodeWidget.Show()
 
-
- gaa =  GetGlobalAA()
-  width=gaa.vm.GetResX()
-  height=gaa.vm.GetResY()
   rect=CreateObject("roRectangle", 0, 0, width, height)
 
   'new node 5-16-17
@@ -118,8 +114,8 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
   }
   'end new
 
-  gaa.htmlWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
-  gaa.htmlWidget.Show()
+  ga.htmlWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
+  ga.htmlWidget.Show()
 
 End Sub
 Sub HandleEvents()
