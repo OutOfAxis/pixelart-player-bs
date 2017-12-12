@@ -26,6 +26,15 @@ async function establishConnectionWithWebSocket() {
       messagingService.handleMessage(data, ws);
     }
   });
+
+  ws.on('close', function close() {
+    logger.info('Disconnected, trying establish new connection');
+    establishConnectionWithWebSocket();
+  });
+
+  setTimeout(function timeout() {
+    ws.send();
+  }, 5000);
 }
 
 module.exports = {

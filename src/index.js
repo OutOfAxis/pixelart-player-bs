@@ -13,4 +13,3 @@ const config = require('./server/utils/config');
   await registrationService.registerDevice();
   webSocket.establishConnectionWithWebSocket();
 })();
-
