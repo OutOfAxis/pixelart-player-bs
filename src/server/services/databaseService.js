@@ -3,50 +3,30 @@ const fileHandler = require('../utils/fileHandler');
 const exists = require('exists-file');
 
 const path = require('path');
-const dbPath = path.resolve(communication.DATABASE_ADDRESS, 'brightPixel.json');
+const dbPath = path.resolve(communication.DATABASE_ADDRESS, 'bs-player-config.json');
 const defaultContentPath = path.resolve(communication.DATABASE_ADDRESS, 'defaultContent.json');
 
 async function initializeConnectionWithDataBase() {
-  let configuration = {
-    Configuration: {
-      id: null,
-      config: null,
-    },
-  };
-  let db = null;
-
+  let configuration = null;
   if (await exists(dbPath)) {
-    db = await fileHandler.getFileContent(dbPath);
-  }
-  if (db !== '[]' && db !== null) {
-    configuration = JSON.parse(db);
-  } else {
-    await fileHandler.createNewFile(dbPath, JSON.stringify(configuration));
+    configuration = await fileHandler.getFileContent(dbPath);
   }
 
-  return configuration;
-}
-async function initializeDeviceIdentifier(identifier) {
-  const configuration = await initializeConnectionWithDataBase();
-  configuration.Configuration.id = identifier;
-
-  await fileHandler.createNewFile(dbPath, JSON.stringify(configuration));
+  return JSON.parse(configuration);
 }
 
-async function insertConfiguration(identifier, config) {
+async function updateConfiguration() {
   const configuration = await initializeConnectionWithDataBase();
 
-  if (identifier !== null) {
-    configuration.Configuration.id = identifier;
-  }
-  configuration.Configuration.config = config;
+  configuration.registered = true;
+
   await fileHandler.createNewFile(dbPath, JSON.stringify(configuration));
 }
 
 async function getConfiguration() {
   const config = await initializeConnectionWithDataBase();
 
-  return config.Configuration;
+  return config;
 }
 
 async function insertDefaultContent(response) {
@@ -55,8 +35,7 @@ async function insertDefaultContent(response) {
 
 
 module.exports = {
-  insertConfiguration,
-  initializeDeviceIdentifier,
+  updateConfiguration,
   getConfiguration,
   insertDefaultContent,
 };
