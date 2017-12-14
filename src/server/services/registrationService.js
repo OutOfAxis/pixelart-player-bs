@@ -24,7 +24,7 @@ function registerDevice() {
 
 function sendVerificationMessage(token) {
   return co(function* () {
-    token = '66f4ccb';
+    token = '90a2a77';
     const options = {
       method: 'PUT',
       uri: `${communication.REST_API_URL}${token}`,

@@ -87,6 +87,7 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
         brightsign_js_objects_enabled: true
     focus_enabled: true
     javascript_enabled: true
+    hwz_default: "on"
     url: url$
     storage_path: "SD:"
     storage_quota: 1073741824
