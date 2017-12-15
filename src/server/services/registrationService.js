@@ -7,7 +7,7 @@ const logger = require('../utils/logger').logger;
 function registerDevice() {
   return databaseService.getConfiguration()
     .then((result) => {
-      if (result.registered === undefined || result.registered === false) {
+      if (!result.registered) {
         return sendVerificationMessage(result);
       }
     }).catch((err)=>{
