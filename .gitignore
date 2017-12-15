@@ -130,6 +130,6 @@ dist
 # Temps
 tmp
 playlist.json
-brightPixel.json
+bs-player-config.json
 defaultContent.json
 content
