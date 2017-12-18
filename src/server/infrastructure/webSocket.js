@@ -8,8 +8,8 @@ const WebSocket = require('ws');
 
 async function establishConnectionWithWebSocket() {
   const configuration = await databaseService.getConfiguration();
-  const url = `${communication.WS_API_URL}${configuration.config.playerId}/ws`;
-  const authorizationToken = `${configuration.config.playerId}:${configuration.config.password}`;
+  const url = `${communication.WS_API_URL}${configuration.id}/ws`;
+  const authorizationToken = `${configuration.id}:${configuration.password}`;
   const ws = new WebSocket(url, {
     perMessageDeflate: false,
     headers: {
