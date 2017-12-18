@@ -15,12 +15,12 @@ async function initializeConnectionWithDataBase() {
   return JSON.parse(configuration);
 }
 
-async function updateConfiguration() {
+async function updateConfiguration(propertyName, propertyValue) {
   const configuration = await initializeConnectionWithDataBase();
 
-  configuration.registered = true;
+  configuration[propertyName] = propertyValue;
 
-  await fileHandler.createNewFile(dbPath, JSON.stringify(configuration));
+  return await fileHandler.createNewFile(dbPath, JSON.stringify(configuration));
 }
 
 async function getConfiguration() {

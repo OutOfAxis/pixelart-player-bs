@@ -25,6 +25,12 @@ async function processMessageRequest(type, body) {
     SetDefaultContent: setDefaultContent,
     PlayDefault: playDefault,
     SetRecoverContent: setRecoverContent,
+    UpdatePassword: updatePassword,
+    SetOrientation: updateOrientation,
+    UpdatePlayerName: updatePlayerName,
+    Unregister: unregister,
+    UpdateLogServerURI: updateLogServerURI,
+    UpdateServerURI: updateServerURI,
   };
 
   if (!types[type]) {
@@ -102,6 +108,40 @@ function setRecoverContent({ commandId, uri, webSocket }) {
 
 function unknownMessage(type, { commandId, webSocket }) {
   webSocket.send(responseService.unknownMessage(type, commandId));
+}
+
+async function updatePassword({ password, commandId, webSocket }) {
+  await databaseService.updateConfiguration('password', password);
+
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
+
+function updateOrientation({ orientation, commandId, webSocket }) {
+  webSocket.send(responseService.unknownMessage(orientation, commandId));
+}
+
+async function updatePlayerName({ name, commandId, webSocket }) {
+  await databaseService.updateConfiguration('name', name);
+
+  webSocket.send(responseService.playerNameUpdatedResponse(commandId, name));
+}
+
+async function unregister({ commandId, webSocket }) {
+  await databaseService.updateConfiguration('registered', false);
+
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
+
+async function updateLogServerURI({ Uri, commandId, webSocket }) {
+  await databaseService.updateConfiguration('logServerUri', Uri);
+
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
+
+async function updateServerURI({ Uri, commandId, webSocket }) {
+  await databaseService.updateConfiguration('serverUri', Uri);
+
+  webSocket.send(responseService.commandAckResponse(commandId));
 }
 
 module.exports = {

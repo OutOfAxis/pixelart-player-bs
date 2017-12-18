@@ -28,7 +28,7 @@ function sendVerificationMessage(configuration) {
 
     try {
       yield requestPromise(options);
-      return databaseService.updateConfiguration();
+      return databaseService.updateConfiguration('registered', true);
     } catch (error) {
       logger.error(error);
     }

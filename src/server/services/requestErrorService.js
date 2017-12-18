@@ -9,6 +9,12 @@ function handleError(type, body, error) {
     SetDefaultContent: responseService.commandErrorResponse,
     PlayDefault: responseService.commandErrorResponse,
     UnknownMessage: responseService.unknownMessage,
+    UpdatePassword: responseService.commandErrorResponse,
+    SetOrientation: responseService.commandErrorResponse,
+    UpdatePlayerName: responseService.commandErrorResponse,
+    Unregister: responseService.commandErrorResponse,
+    UpdateLogServerURI: responseService.commandErrorResponse,
+    UpdateServerURI: responseService.commandErrorResponse,
   };
 
   logger.error(error);

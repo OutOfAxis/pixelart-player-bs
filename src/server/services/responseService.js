@@ -54,6 +54,15 @@ function fileDownloadFailedResponse({ commandId, fileId }, reason) {
   });
 }
 
+function playerNameUpdatedResponse(commandId, name) {
+  return JSON.stringify({
+    PlayerNameUpdated: {
+      commandId,
+      name,
+    },
+  });
+}
+
 function commandErrorResponse({ commandId }, reason) {
   return JSON.stringify({
     CommandError: {
@@ -79,6 +88,7 @@ module.exports = {
   commandAckResponse,
   getFilesResponse,
   fileDownloadFailedResponse,
+  playerNameUpdatedResponse,
   commandErrorResponse,
   unknownMessage,
 };
