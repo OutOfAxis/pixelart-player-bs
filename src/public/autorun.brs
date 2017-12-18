@@ -18,14 +18,14 @@ Sub Main(args)
   n.SetLoginPassword("password")
   n.Apply()
   reg.flush()
-  
+
   'reboots if html node not already enabled
   rs = createobject("roregistrysection", "html")
   mp = rs.read("mp")
   if mp <> "1" then
       rs.write("mp","1")
       rs.flush()
-      RebootSystem()	
+      RebootSystem()
   endif
 
 
@@ -68,6 +68,14 @@ Function DoCanonicalInit()
 
   gaa.hp = CreateObject("roNetworkHotplug")
   gaa.hp.setPort(gaa.mp)
+
+  gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
+
+  gaa.screenshotTimer = CreateObject("roTimer")
+  gaa.screenshotTimer.SetPort(gaa.mp)
+  gaa.screenshotTimer.SetElapsed(5, 0)
+  gaa.screenshotTimer.SetUserData({msgtype:"takeScreenshot"})
+  gaa.screenshotTimer.Start()
 
 End Function
 Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
@@ -157,6 +165,29 @@ Sub HandleEvents()
       endif
     else if type(ev) = "roGpioButton" then
       if ev.GetInt() = 12 then stop
+    else if type(ev) = "roTimerEvent" then
+      print "=== BS: Timer Event at "; Uptime(0)
+      print "=== BS: User Data:"; ev.GetUserData()
+      ' Saving screenshot
+      screenshotIsSaved = gaa.vm.Screenshot({
+        filename: "SD:/screenshot.jpeg"
+        width: gaa.vm.GetOutputResX()
+        height: gaa.vm.GetOutputResY()
+        filetype: "JPEG"
+        async: 0
+      })
+      if screenshotIsSaved
+        print "=== BS: Screenshot has been saved"
+      else
+        print "=== BS: Error saving screenshot"
+      end if
+      ' Sending screenshot
+      print "=== BS: Sending screenshot for playerId="; gaa.config.id
+      ut = CreateObject("roUrlTransfer")
+      ut.SetUrl("http://b.pixelart.ge:5111/log-data/android/screenshot/" + gaa.config.id)
+      statusCode = ut.PutFromFile("/screenshot.jpeg")
+      print "=== BS: Screenshot sent: "; statusCode
+      gaa.screenshotTimer.Start()
     else
       print "=== BS: Unhandled event: "; type(ev)
     end if
