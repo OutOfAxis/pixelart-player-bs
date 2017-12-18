@@ -69,6 +69,8 @@ Function DoCanonicalInit()
   gaa.hp = CreateObject("roNetworkHotplug")
   gaa.hp.setPort(gaa.mp)
 
+  gaa.syslog = CreateObject("roSystemLog")
+
   gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
 
   gaa.screenshotTimer = CreateObject("roTimer")
@@ -188,6 +190,33 @@ Sub HandleEvents()
       statusCode = ut.PutFromFile("/screenshot.jpeg")
       print "=== BS: Screenshot sent: "; statusCode
       gaa.screenshotTimer.Start()
+      ' Sending system log
+      st = CreateObject("roSystemTime")
+      di = CreateObject("roDeviceInfo")
+      si = CreateObject("roStorageInfo", "SD:")
+      nc = CreateObject("roNetworkConfiguration", 0)
+      ut = CreateObject("roUrlTransfer")
+      ut.SetUrl("http://b.pixelart.ge:5111/log-data/android/system-report")
+      ut.AddHeader("Content-Type", "application/json")
+      netconf = nc.GetCurrentConfig()
+      time = st.GetLocalDateTime().ToSecondsSinceEpoch()
+      logData = CreateObject("roAssociativeArray")
+      logData["playerId"] = gaa.config.id
+      logData["modelName"] = di.GetModel()
+      logData["systemVersion"] = di.GetVersion()
+      logData["appVersion"] = "0.1"
+      logData["systemStartTime"] = di.GetDeviceLifetime()
+      logData["totalCapacity"] = si.GetSizeInMegabytes()
+      logData["totalFreeSpace"] = si.GetFreeInMegabytes()
+      logData["cpuUsage"] = "100%"
+      logData["memoryTotal"] = 0
+      logData["memoryUsed"] = 0
+      logData["ipAddress"] = netconf.ip4_address
+      logData["lastOnline"] = time
+      payload = FormatJson(logData, 0)
+      print payload
+      statusCode = ut.PutFromString(payload)
+      print "=== BS: System log sent: "; statusCode
     else
       print "=== BS: Unhandled event: "; type(ev)
     end if
