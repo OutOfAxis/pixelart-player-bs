@@ -19,7 +19,7 @@ function sendVerificationMessage(configuration) {
   return co(function* () {
     const options = {
       method: 'PUT',
-      uri: `${communication.REST_API_URL}${configuration.token}`,
+      uri: `${communication.getAPIAddress()}${configuration.token}`,
       formData: {
         secret: configuration.id,
       },
