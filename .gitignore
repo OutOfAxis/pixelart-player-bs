@@ -55,6 +55,9 @@ static/index.html
 # Visual Studio 2015 cache/options directory
 .vs/
 
+# OS-specific files
+.DS_Store
+
 # User-specific files
 *.suo
 *.user

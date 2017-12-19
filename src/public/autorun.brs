@@ -69,6 +69,8 @@ Function DoCanonicalInit()
   gaa.hp = CreateObject("roNetworkHotplug")
   gaa.hp.setPort(gaa.mp)
 
+  gaa.syslog = CreateObject("roSystemLog")
+
   gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
 
   gaa.screenshotTimer = CreateObject("roTimer")
@@ -188,6 +190,39 @@ Sub HandleEvents()
       statusCode = ut.PutFromFile("/screenshot.jpeg")
       print "=== BS: Screenshot sent: "; statusCode
       gaa.screenshotTimer.Start()
+      ' Sending system log
+      st = CreateObject("roSystemTime")
+      di = CreateObject("roDeviceInfo")
+      si = CreateObject("roStorageInfo", "SD:")
+      nc = CreateObject("roNetworkConfiguration", 0)
+      ut = CreateObject("roUrlTransfer")
+      ut.SetUrl("http://b.pixelart.ge:5111/log-data/android/system-report")
+      ut.AddHeader("Content-Type", "application/json")
+      loadavg = di.GetLoadStatistics({item:"loadavg"})
+      meminfo = di.GetLoadStatistics({item:"meminfo"})
+      netconf = nc.GetCurrentConfig()
+      time = st.GetLocalDateTime().ToSecondsSinceEpoch()
+      cpuRe = CreateObject("roRegex", "^([0-9.]+)", "")
+      memRe = CreateObject("roRegex", "MemTotal:\s*(\d+).*MemFree:\s*(\d+).*MemAvailable:\s*(\d+).*", "ms")
+      memusage = memRe.Match(meminfo)
+      cpuload = (val(cpuRe.Match(loadavg)[1])*100) MOD 101
+      logData = CreateObject("roAssociativeArray")
+      logData["playerId"] = gaa.config.id
+      logData["modelName"] = di.GetModel()
+      logData["systemVersion"] = di.GetVersion()
+      logData["appVersion"] = "0.1"
+      logData["systemStartTime"] = di.GetDeviceLifetime()
+      logData["totalCapacity"] = si.GetSizeInMegabytes() * 1024 * 1024
+      logData["totalFreeSpace"] = si.GetFreeInMegabytes() * 1024 * 1024
+      logData["cpuUsage"] = str(cpuload) + "%"
+      logData["memoryTotal"] = val(memusage[1])
+      logData["memoryUsed"] = val(memusage[1]) - val(memusage[2])
+      logData["ipAddress"] = netconf.ip4_address
+      logData["lastOnline"] = time * 1000
+      payload = FormatJson(logData, 0)
+      print payload
+      statusCode = ut.PutFromString(payload)
+      print "=== BS: System log sent: "; statusCode
     else
       print "=== BS: Unhandled event: "; type(ev)
     end if
