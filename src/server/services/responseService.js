@@ -56,7 +56,7 @@ function fileDownloadFailedResponse({ commandId, fileId }, reason) {
 
 function playerNameUpdatedResponse(commandId, name) {
   return JSON.stringify({
-    PlayerNameUpdated: {
+    NameUpdated: {
       commandId,
       name,
     },

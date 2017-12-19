@@ -27,10 +27,10 @@ async function processMessageRequest(type, body) {
     SetRecoverContent: setRecoverContent,
     UpdatePassword: updatePassword,
     SetOrientation: updateOrientation,
-    UpdatePlayerName: updatePlayerName,
+    UpdateName: updatePlayerName,
     Unregister: unregister,
-    UpdateLogServerURI: updateLogServerURI,
-    UpdateServerURI: updateServerURI,
+    UpdateLogServerUri: updateLogServerURI,
+    UpdateServerUri: updateServerURI,
   };
 
   if (!types[type]) {
@@ -110,20 +110,22 @@ function unknownMessage(type, { commandId, webSocket }) {
   webSocket.send(responseService.unknownMessage(type, commandId));
 }
 
-async function updatePassword({ password, commandId, webSocket }) {
-  await databaseService.updateConfiguration('password', password);
+async function updatePassword({ newPassword, commandId, webSocket }) {
+  await databaseService.updateConfiguration('password', newPassword);
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
-function updateOrientation({ orientation, commandId, webSocket }) {
-  webSocket.send(responseService.unknownMessage(orientation, commandId));
+async function updateOrientation({ orientation, commandId, webSocket }) {
+  await databaseService.updateConfiguration('orientation', orientation);
+
+  webSocket.send(responseService.commandAckResponse(commandId));
 }
 
-async function updatePlayerName({ name, commandId, webSocket }) {
-  await databaseService.updateConfiguration('name', name);
+async function updatePlayerName({ newName, commandId, webSocket }) {
+  await databaseService.updateConfiguration('name', newName);
 
-  webSocket.send(responseService.playerNameUpdatedResponse(commandId, name));
+  webSocket.send(responseService.commandAckResponse(commandId));
 }
 
 async function unregister({ commandId, webSocket }) {
