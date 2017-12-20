@@ -4,22 +4,25 @@ const co = require('co');
 const requestPromise = require('request-promise');
 const logger = require('../utils/logger').logger;
 
-function registerDevice() {
-  return databaseService.getConfiguration()
+async function registerDevice() {
+  return await databaseService.getConfiguration()
     .then((result) => {
       if (!result.registered) {
-        return sendVerificationMessage(result);
+        const url = `${communication.getAPIAddress(result.serverUri)}${result.token}`;
+        console.log(url);
+        return sendVerificationMessage(result, url);
       }
     }).catch((err)=>{
       logger.error(err);
     });
 }
 
-function sendVerificationMessage(configuration) {
+function sendVerificationMessage(configuration, url) {
+  console.log(url);
   return co(function* () {
     const options = {
       method: 'PUT',
-      uri: `${communication.getAPIAddress()}${configuration.token}`,
+      uri: url,
       formData: {
         secret: configuration.id,
       },

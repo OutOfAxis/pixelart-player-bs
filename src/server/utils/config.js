@@ -1,6 +1,4 @@
-const databaseService = require('../services/databaseService');
-
-const LOCAL = '/Users/bartosz/Repositories/pixelart-player-bs'; // '/storage/sd';
+const LOCAL = '/storage/sd';
 const DATABASE_ADDRESS = `${LOCAL}`;
 const TMP_DIRECTORY = '/Users/bartosz/Repositories/pixelart-player-bs';
 const CONTENT_ADDRESS = `${LOCAL}/content/`;
@@ -10,10 +8,8 @@ function getWebSocketAddress(address, id) {
   return `ws://${address}/api/1/player/${id}/ws`;
 }
 
-async function getAPIAddress() {
-  const configuration = await databaseService.getConfiguration();
-
-  return `http://${configuration.serverUri}/api/1/player/register/`;
+function getAPIAddress(serverUri) {
+  return `http://${serverUri}/api/1/player/register/`;
 }
 
 module.exports = {
