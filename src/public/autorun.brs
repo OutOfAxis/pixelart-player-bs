@@ -73,12 +73,27 @@ Function DoCanonicalInit()
 
   gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
 
+  sysTime = CreateObject("roSystemTime")
+  sysTime.SetTimeZone("GMT+4")
+
   gaa.screenshotTimer = CreateObject("roTimer")
   gaa.screenshotTimer.SetPort(gaa.mp)
   gaa.screenshotTimer.SetElapsed(5, 0)
   gaa.screenshotTimer.SetUserData({msgtype:"takeScreenshot"})
   gaa.screenshotTimer.Start()
 
+End Function
+Function FormatDateTime(dt)
+  ' 2010-06-30T01:20
+  pad = Function(s)
+    st = s.Trim()
+    if st.Len() = 2 then
+      Return st
+    else
+      Return "0" + st
+    end if
+  End Function
+  Return dt.GetYear().ToStr() + "-" + pad(strI(dt.GetMonth())) + "-" + pad(strI(dt.GetDay())) + "T" + pad(strI(dt.GetHour())) + ":" + pad(strI(dt.GetMinute())) + ":" + pad(strI(dt.GetSecond())) + "+04:00"
 End Function
 Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
 
@@ -186,7 +201,7 @@ Sub HandleEvents()
       ' Sending screenshot
       print "=== BS: Sending screenshot for playerId="; gaa.config.id
       ut = CreateObject("roUrlTransfer")
-      ut.SetUrl("http://b.pixelart.ge:5111/log-data/android/screenshot/" + gaa.config.id)
+      ut.SetUrl("http://" + gaa.config.logServerUri + "/log-data/android/screenshot/" + gaa.config.id)
       statusCode = ut.PutFromFile("/screenshot.jpeg")
       print "=== BS: Screenshot sent: "; statusCode
       gaa.screenshotTimer.Start()
@@ -196,12 +211,16 @@ Sub HandleEvents()
       si = CreateObject("roStorageInfo", "SD:")
       nc = CreateObject("roNetworkConfiguration", 0)
       ut = CreateObject("roUrlTransfer")
-      ut.SetUrl("http://b.pixelart.ge:5111/log-data/android/system-report")
+      ut.SetUrl("http://" + gaa.config.logServerUri + "/log-data/android/system-report")
       ut.AddHeader("Content-Type", "application/json")
+      lastOnline = CreateObject("roDateTime")
+      systemStartTime = CreateObject("roDateTime")
       loadavg = di.GetLoadStatistics({item:"loadavg"})
       meminfo = di.GetLoadStatistics({item:"meminfo"})
       netconf = nc.GetCurrentConfig()
-      time = st.GetLocalDateTime().ToSecondsSinceEpoch()
+      timestamp = st.GetLocalDateTime().ToSecondsSinceEpoch()
+      lastOnline.FromSecondsSinceEpoch(timestamp)
+      systemStartTime.FromSecondsSinceEpoch(timestamp - di.GetDeviceUptime())
       cpuRe = CreateObject("roRegex", "^([0-9.]+)", "")
       memRe = CreateObject("roRegex", "MemTotal:\s*(\d+).*MemFree:\s*(\d+).*MemAvailable:\s*(\d+).*", "ms")
       memusage = memRe.Match(meminfo)
@@ -211,14 +230,14 @@ Sub HandleEvents()
       logData["modelName"] = di.GetModel()
       logData["systemVersion"] = di.GetVersion()
       logData["appVersion"] = "0.1"
-      logData["systemStartTime"] = di.GetDeviceLifetime()
-      logData["totalCapacity"] = si.GetSizeInMegabytes() * 1024 * 1024
-      logData["totalFreeSpace"] = si.GetFreeInMegabytes() * 1024 * 1024
-      logData["cpuUsage"] = str(cpuload) + "%"
+      logData["systemStartTime"] = FormatDateTime(systemStartTime)
+      logData["totalCapacity"] = si.GetSizeInMegabytes()
+      logData["totalFreeSpace"] = si.GetFreeInMegabytes()
+      logData["cpuUsage"] = strI(cpuload).Trim() + "%"
       logData["memoryTotal"] = val(memusage[1])
       logData["memoryUsed"] = val(memusage[1]) - val(memusage[2])
       logData["ipAddress"] = netconf.ip4_address
-      logData["lastOnline"] = time * 1000
+      logData["lastOnline"] = FormatDateTime(lastOnline)
       payload = FormatJson(logData, 0)
       print payload
       statusCode = ut.PutFromString(payload)
