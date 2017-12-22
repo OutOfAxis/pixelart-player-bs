@@ -10,6 +10,7 @@
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha test --recursive --colors --no-timeouts --compilers js:babel-core/register",
     "lint": "node node_modules/eslint/bin/eslint.js src/",
+    "build": "npx babel src --out-dir dist --presets=env --source-maps",
     "git-pre-hooks": {
       "pre-commit": "npm run lint",
       "pre-push": "npm run test"
