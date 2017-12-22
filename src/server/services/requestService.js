@@ -91,13 +91,16 @@ async function getPlaylist({ commandId, webSocket }) {
 }
 
 async function setDefaultContent({ commandId, uri, webSocket }) {
-  await databaseService.insertDefaultContent(uri);
+  await databaseService.updateConfiguration(`defaultContent`, uri);
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
-function playDefault({ commandId, webSocket }) {
-  logger.info('Here we play default content');
+async function playDefault({ commandId, webSocket }) {
+  const configuration = await databaseService.getConfiguration();
+  const bsMessage = new BSMessagePort();
+
+  bsMessage.PostBSMessage({ complete: true, result: configuration.defaultContent });
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
