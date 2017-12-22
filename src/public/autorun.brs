@@ -176,6 +176,11 @@ Sub HandleEvents()
           ' To use this: msgPort.PostBSMessage({text: "my message"});
               'm.logFile.SendLine(eventData.message.text)
               'm.logFile.AsyncFlush()
+          if eventData.message.msgtype = "loadurl" then
+            print "=== BS: Loading URL: "; eventData.message.url
+            loadResult = gaa.htmlWidget.SetURL(eventData.message.url)
+            print "=== BS: Load result: "; loadResult
+          endif
         endif
       else
         print "=== BS: Unknown eventData: "; type(eventData)
