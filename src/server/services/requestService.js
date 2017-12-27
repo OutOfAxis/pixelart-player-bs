@@ -1,3 +1,4 @@
+const path = require('path');
 const fileHandler = require('../utils/fileHandler');
 const responseService = require('./responseService');
 const databaseService = require('./databaseService');
@@ -65,7 +66,7 @@ async function getFiles({ commandId, webSocket }) {
 }
 
 async function deleteFile({ commandId, fileId, webSocket }) {
-  await fileHandler.deleteFile(fileId);
+  await fileHandler.deleteFile(path.join(config.CONTENT_ADDRESS, fileId));
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
