@@ -1,4 +1,4 @@
-const LOCAL = '/Users/bartosz/Repositories/pixelart-player-bs';  // '/storage/sd';
+const LOCAL = '/storage/sd';
 const DATABASE_ADDRESS = `${LOCAL}`;
 const TMP_DIRECTORY = '/Users/bartosz/Repositories/pixelart-player-bs';
 const CONTENT_ADDRESS = `${LOCAL}/content/`;
