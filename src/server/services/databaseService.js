@@ -4,7 +4,6 @@ const exists = require('exists-file');
 
 const path = require('path');
 const dbPath = path.resolve(communication.DATABASE_ADDRESS, 'bs-player-config.json');
-const defaultContentPath = path.resolve(communication.DATABASE_ADDRESS, 'defaultContent.json');
 
 async function initializeConnectionWithDataBase() {
   let configuration = null;
@@ -29,13 +28,8 @@ async function getConfiguration() {
   return config;
 }
 
-async function insertDefaultContent(response) {
-  await fileHandler.createNewFile(defaultContentPath, response);
-}
-
 
 module.exports = {
   updateConfiguration,
   getConfiguration,
-  insertDefaultContent,
 };
