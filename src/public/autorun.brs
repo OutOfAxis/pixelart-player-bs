@@ -38,6 +38,9 @@ End Sub
 Function DoCanonicalInit()
 
   gaa =  GetGlobalAA()
+  gaa.syslog = CreateObject("roSystemLog")
+  
+  gaa.syslog.SendLine("=== BS: Do Canonical Initialization...")
 
   EnableZoneSupport(1)
   OpenOrCreateCurrentLog()
@@ -69,9 +72,10 @@ Function DoCanonicalInit()
   gaa.hp = CreateObject("roNetworkHotplug")
   gaa.hp.setPort(gaa.mp)
 
-  gaa.syslog = CreateObject("roSystemLog")
 
   gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
+
+  gaa.syslog.SendLine("=== BS: BSPlayer configuration loaded")
 
   sysTime = CreateObject("roSystemTime")
   sysTime.SetTimeZone("GMT+4")
@@ -102,14 +106,19 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
   height=ga.vm.GetResY()
   rect=CreateObject("roRectangle", 0, 0, width, height)
 
+  ' set proper orientation
+  transform = "identity"
+  if ga.config.orientation = "90" then transform = "rot90"
+  if ga.config.orientation = "270" then transform = "rot270"
+
   'new node 5-16-17
   is = {
       port: 2998
   }
   config = {
-        nodejs_enabled: true
-        inspector_server: is
-        brightsign_js_objects_enabled: true
+    nodejs_enabled: true
+    inspector_server: is
+    brightsign_js_objects_enabled: true
     focus_enabled: true
     javascript_enabled: true
     hwz_default: "on"
@@ -129,13 +138,14 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
       port: 2999
   }
   config = {
-        nodejs_enabled: true
-        inspector_server: is
-        brightsign_js_objects_enabled: true
+    nodejs_enabled: true
+    inspector_server: is
+    brightsign_js_objects_enabled: true
     focus_enabled: true
     javascript_enabled: true
     hwz_default: "on"
     url: contentUrl$
+    transform: transform
     storage_path: "SD:"
     storage_quota: 1073741824
   }
