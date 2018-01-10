@@ -98,9 +98,9 @@ async function setDefaultContent({ commandId, uri, webSocket }) {
 
 async function playDefault({ commandId, webSocket }) {
   const configuration = await databaseService.getConfiguration();
-  // const bsMessage = new BSMessagePort();
-  //
-  // bsMessage.PostBSMessage({ complete: true, result: configuration.defaultContent });
+  const bsMessage = new BSMessagePort();
+
+  bsMessage.PostBSMessage({ complete: true, result: configuration.defaultContent });
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
