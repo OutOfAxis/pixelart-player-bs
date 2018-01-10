@@ -2,7 +2,6 @@ const communication = require('../utils/config');
 const databaseService = require('../services/databaseService');
 const messagingService = require('../services/requestService');
 const encryption = require('../utils/encryption');
-const logger = require('../utils/logger').logger;
 
 const WebSocket = require('ws');
 
@@ -18,7 +17,7 @@ async function establishConnectionWithWebSocket() {
   });
 
   ws.on('open', function open() {
-    logger.info('Connection to WebSocket has been established.');
+    console.log('Connection to WebSocket has been established.');
   });
 
   ws.on('message', function incoming(data) {
@@ -28,7 +27,7 @@ async function establishConnectionWithWebSocket() {
   });
 
   ws.on('close', function close() {
-    logger.info('Disconnected, trying establish new connection');
+    console.log('Disconnected, trying establish new connection');
     establishConnectionWithWebSocket();
   });
 

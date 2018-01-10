@@ -14,10 +14,5 @@ module.exports = {
       }
     ],
   },
-  node: {
-    fs: 'empty',
-    mkdirp: 'empty',
-    net: 'empty',
-    tls: 'empty',
-  },
+  target: `node`,
 };

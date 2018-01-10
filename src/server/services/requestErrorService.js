@@ -1,5 +1,4 @@
 const responseService = require('./responseService');
-const logger = require('../utils/logger').logger;
 
 function handleError(type, body, error) {
   const errorTypes = {
@@ -17,7 +16,7 @@ function handleError(type, body, error) {
     UpdateServerURI: responseService.commandErrorResponse,
   };
 
-  logger.error(error);
+  console.log(error);
 
   if (type === 'GetPlaylist') {
     return body.webSocket.send(errorTypes[type](body.commandId, '[]'));

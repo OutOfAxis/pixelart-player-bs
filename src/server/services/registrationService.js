@@ -2,7 +2,6 @@ const databaseService = require('./databaseService');
 const communication = require('../utils/config');
 const co = require('co');
 const requestPromise = require('request-promise');
-const logger = require('../utils/logger').logger;
 
 async function registerDevice() {
   return await databaseService.getConfiguration()
@@ -13,7 +12,7 @@ async function registerDevice() {
         return sendVerificationMessage(result, url);
       }
     }).catch((err)=>{
-      logger.error(err);
+      console.log(err);
     });
 }
 
@@ -33,7 +32,7 @@ function sendVerificationMessage(configuration, url) {
       yield requestPromise(options);
       return databaseService.updateConfiguration('registered', true);
     } catch (error) {
-      logger.error(error);
+      console.log(error);
     }
   });
 }

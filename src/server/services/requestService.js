@@ -4,13 +4,12 @@ const responseService = require('./responseService');
 const databaseService = require('./databaseService');
 const errorService = require('./requestErrorService');
 const config = require('../utils/config');
-const logger = require('../utils/logger').logger;
 
 function handleMessage(content, webSocket) {
   const message = JSON.parse(content);
   const messageName = Object.getOwnPropertyNames(message)[0];
   message[messageName].webSocket = webSocket;
-  logger.info(messageName);
+  console.log(messageName);
 
   return processMessageRequest(messageName, message[messageName], webSocket);
 }
@@ -99,9 +98,9 @@ async function setDefaultContent({ commandId, uri, webSocket }) {
 
 async function playDefault({ commandId, webSocket }) {
   const configuration = await databaseService.getConfiguration();
-  const bsMessage = new BSMessagePort();
-
-  bsMessage.PostBSMessage({ complete: true, result: configuration.defaultContent });
+  // const bsMessage = new BSMessagePort();
+  //
+  // bsMessage.PostBSMessage({ complete: true, result: configuration.defaultContent });
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
