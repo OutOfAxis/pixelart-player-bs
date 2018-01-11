@@ -8,7 +8,6 @@ async function registerDevice() {
     .then((result) => {
       if (!result.registered) {
         const url = `${communication.getAPIAddress(result.serverUri)}${result.token}`;
-        console.log(url);
         return sendVerificationMessage(result, url);
       }
     }).catch((err)=>{

@@ -116,6 +116,7 @@ function initDirectories(dirPath) {
         reject(error);
         return;
       }
+
       resolve();
     });
   });
