@@ -80,6 +80,27 @@ Function DoCanonicalInit()
   sysTime = CreateObject("roSystemTime")
   sysTime.SetTimeZone("GMT+4")
 
+  if gaa.config.wifi then
+    gaa.syslog.SendLine("=== BS: Connecting to WiFi")
+    nc.SetWiFiESSID(gaa.config.ssid)
+    nc.SetObfuscatedWifiPassphrase(gaa.config.passphrase)
+  endif
+
+  if gaa.config.dhcp then
+    gaa.syslog.SendLine("=== BS: Using DHCP")
+    nc.SetDHCP()
+  else
+    gaa.syslog.SendLine("=== BS: Using static network configuration")
+    nc.SetIP4Address(gaa.config.ip)
+    nc.SetIP4Netmask(gaa.config.netmask)
+    nc.SetIP4Gateway(gaa.config.gateway)
+  endif
+
+  success = nc.Apply()
+  if not success then
+    gaa.syslog.SendLine("=== BS: Applying network configuration failure")
+  endif
+
   gaa.screenshotTimer = CreateObject("roTimer")
   gaa.screenshotTimer.SetPort(gaa.mp)
   gaa.screenshotTimer.SetElapsed(5, 0)
