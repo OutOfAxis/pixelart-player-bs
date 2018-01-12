@@ -31,6 +31,7 @@ async function processMessageRequest(type, body) {
     Unregister: unregister,
     UpdateLogServerUri: updateLogServerURI,
     UpdateServerUri: updateServerURI,
+    Reboot: reboot,
   };
 
   if (!types[type]) {
@@ -98,9 +99,7 @@ async function setDefaultContent({ commandId, uri, webSocket }) {
 
 async function playDefault({ commandId, webSocket }) {
   const configuration = await databaseService.getConfiguration();
-  const bsMessage = new BSMessagePort();
-
-  bsMessage.PostBSMessage({ complete: true, result: configuration.defaultContent });
+  sendBrightSignMessage(configuration.defaultContent);
 
   webSocket.send(responseService.commandAckResponse(commandId));
 }
@@ -147,6 +146,18 @@ async function updateServerURI({ Uri, commandId, webSocket }) {
   await databaseService.updateConfiguration('serverUri', Uri);
 
   webSocket.send(responseService.commandAckResponse(commandId));
+}
+
+function reboot({ commandId, webSocket }) {
+  sendBrightSignMessage('reboot');
+
+  webSocket.send(responseService.commandAckResponse(commandId));
+}
+
+function sendBrightSignMessage(message) {
+  const bsMessage = new BSMessagePort();
+
+  bsMessage.PostBSMessage({ complete: true, result: message });
 }
 
 module.exports = {
