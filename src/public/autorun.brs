@@ -211,6 +211,9 @@ Sub HandleEvents()
             print "=== BS: Loading URL: "; eventData.message.url
             loadResult = gaa.htmlWidget.SetURL(eventData.message.url)
             print "=== BS: Load result: "; loadResult
+          else if eventData.message.msgtype = "reboot" then
+            print "=== BS: Rebooting player"
+            RebootSystem()
           endif
         endif
       else
