@@ -57,21 +57,8 @@ Function DoCanonicalInit()
   gaa.vm = CreateObject("roVideoMode")
   gaa.vm.setMode("auto")
 
-  ' set DWS on device
-  nc = CreateObject("roNetworkConfiguration", 0)
-  if type(nc) <> "roNetworkConfiguration" then
-    nc = CreateObject("roNetworkConfiguration", 1)
-  endif
-  if type(nc) = "roNetworkConfiguration" then
-    dwsAA = CreateObject("roAssociativeArray")
-    dwsAA["port"] = "80"
-    nc.SetupDWS(dwsAA)
-    nc.Apply()
-  endif
-
   gaa.hp = CreateObject("roNetworkHotplug")
   gaa.hp.setPort(gaa.mp)
-
 
   ' Load BS Player configuration
   gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
@@ -82,38 +69,54 @@ Function DoCanonicalInit()
   sysTime.SetTimeZone("GMT+4")
 
   ' Configure networking
-  
+
   if gaa.config.wifi then
     gaa.syslog.SendLine("BS: Configuring WiFi network")
-    nc.SetWiFiESSID(gaa.config.ssid)
-    nc.SetObfuscatedWifiPassphrase(gaa.config.passphrase)
-  endif
-
-  if gaa.config.dhcp then
-    gaa.syslog.SendLine("BS: Enabling DHCP")
-    nc.SetDHCP()
+    nc = CreateObject("roNetworkConfiguration", 1)
   else
-    gaa.syslog.SendLine("BS: Setting static network configuration")
-    nc.SetIP4Address(gaa.config.ip)
-    nc.SetIP4Netmask(gaa.config.netmask)
-    nc.SetIP4Gateway(gaa.config.gateway)
+    gaa.syslog.SendLine("BS: Configuring Ethernet network")
+    nc = CreateObject("roNetworkConfiguration", 0)
   endif
 
-  if gaa.config.timeServer <> "" then
-    gaa.syslog.SendLine("BS: Setting timeserver address")
-    nc.SetTimeServer(gaa.config.timeServer)
-  endif
+  if type(nc) = "roNetworkConfiguration" then
+    gaa.syslog.SendLine("BS: Setup DWS")
+    dwsAA = CreateObject("roAssociativeArray")
+    dwsAA["port"] = "80"
+    nc.SetupDWS(dwsAA)
 
-  if gaa.config.dns1 <> "" or gaa.config.dns2 <> "" or gaa.config.dns3 <> "" then
-    gaa.syslog.SendLine("BS: Adding DNS servers")
-  endif
-  if gaa.config.dns1 <> "" then nc.AddDNSServer(gaa.config.dns1)
-  if gaa.config.dns2 <> "" then nc.AddDNSServer(gaa.config.dns2)
-  if gaa.config.dns3 <> "" then nc.AddDNSServer(gaa.config.dns3)
+    if gaa.config.wifi then
+      nc.SetWiFiESSID(gaa.config.ssid)
+      nc.SetWiFiPassphrase(gaa.config.passphrase)
+    endif
 
-  success = nc.Apply()
-  if not success then
-    gaa.syslog.SendLine("BS: Applying network configuration failure")
+    if gaa.config.dhcp then
+      gaa.syslog.SendLine("BS: Enabling DHCP")
+      nc.SetDHCP()
+    else
+      gaa.syslog.SendLine("BS: Setting static network configuration")
+      nc.SetIP4Address(gaa.config.ip)
+      nc.SetIP4Netmask(gaa.config.netmask)
+      nc.SetIP4Gateway(gaa.config.gateway)
+    endif
+
+    if gaa.config.timeServer <> "" then
+      gaa.syslog.SendLine("BS: Setting timeserver address")
+      nc.SetTimeServer(gaa.config.timeServer)
+    endif
+
+    if gaa.config.dns1 <> "" or gaa.config.dns2 <> "" or gaa.config.dns3 <> "" then
+      gaa.syslog.SendLine("BS: Adding DNS servers")
+    endif
+    if gaa.config.dns1 <> "" then nc.AddDNSServer(gaa.config.dns1)
+    if gaa.config.dns2 <> "" then nc.AddDNSServer(gaa.config.dns2)
+    if gaa.config.dns3 <> "" then nc.AddDNSServer(gaa.config.dns3)
+
+    success = nc.Apply()
+    if not success then
+      gaa.syslog.SendLine("BS: Applying network configuration failure")
+    endif
+  else
+    gaa.syslog.SendLine("BS: Network interface initialization failure")
   endif
 
   ' Start timer
