@@ -40,7 +40,7 @@ Function DoCanonicalInit()
   gaa =  GetGlobalAA()
   gaa.syslog = CreateObject("roSystemLog")
   
-  gaa.syslog.SendLine("=== BS: Do Canonical Initialization...")
+  gaa.syslog.SendLine("BS: Start Initialization")
 
   EnableZoneSupport(1)
   OpenOrCreateCurrentLog()
@@ -73,39 +73,58 @@ Function DoCanonicalInit()
   gaa.hp.setPort(gaa.mp)
 
 
+  ' Load BS Player configuration
   gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
 
-  gaa.syslog.SendLine("=== BS: BSPlayer configuration loaded")
+  gaa.syslog.SendLine("BS: BSPlayer configuration loaded")
 
   sysTime = CreateObject("roSystemTime")
   sysTime.SetTimeZone("GMT+4")
 
+  ' Configure networking
+  
   if gaa.config.wifi then
-    gaa.syslog.SendLine("=== BS: Connecting to WiFi")
+    gaa.syslog.SendLine("BS: Configuring WiFi network")
     nc.SetWiFiESSID(gaa.config.ssid)
     nc.SetObfuscatedWifiPassphrase(gaa.config.passphrase)
   endif
 
   if gaa.config.dhcp then
-    gaa.syslog.SendLine("=== BS: Using DHCP")
+    gaa.syslog.SendLine("BS: Enabling DHCP")
     nc.SetDHCP()
   else
-    gaa.syslog.SendLine("=== BS: Using static network configuration")
+    gaa.syslog.SendLine("BS: Setting static network configuration")
     nc.SetIP4Address(gaa.config.ip)
     nc.SetIP4Netmask(gaa.config.netmask)
     nc.SetIP4Gateway(gaa.config.gateway)
   endif
 
-  success = nc.Apply()
-  if not success then
-    gaa.syslog.SendLine("=== BS: Applying network configuration failure")
+  if gaa.config.timeServer <> "" then
+    gaa.syslog.SendLine("BS: Setting timeserver address")
+    nc.SetTimeServer(gaa.config.timeServer)
   endif
 
+  if gaa.config.dns1 <> "" or gaa.config.dns2 <> "" or gaa.config.dns3 <> "" then
+    gaa.syslog.SendLine("BS: Adding DNS servers")
+  endif
+  if gaa.config.dns1 <> "" then nc.AddDNSServer(gaa.config.dns1)
+  if gaa.config.dns2 <> "" then nc.AddDNSServer(gaa.config.dns2)
+  if gaa.config.dns3 <> "" then nc.AddDNSServer(gaa.config.dns3)
+
+  success = nc.Apply()
+  if not success then
+    gaa.syslog.SendLine("BS: Applying network configuration failure")
+  endif
+
+  ' Start timer
+  gaa.syslog.SendLine("BS: Starting screenshot timer")
   gaa.screenshotTimer = CreateObject("roTimer")
   gaa.screenshotTimer.SetPort(gaa.mp)
   gaa.screenshotTimer.SetElapsed(5, 0)
   gaa.screenshotTimer.SetUserData({msgtype:"takeScreenshot"})
   gaa.screenshotTimer.Start()
+
+  gaa.syslog.SendLine("BS: Initialization completed")
 
 End Function
 Function FormatDateTime(dt)
@@ -126,6 +145,8 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
   width=ga.vm.GetResX()
   height=ga.vm.GetResY()
   rect=CreateObject("roRectangle", 0, 0, width, height)
+
+  ga.syslog.SendLine("BS: Creating HTML Widgets")
 
   ' set proper orientation
   transform = "identity"
@@ -185,45 +206,47 @@ Sub HandleEvents()
   if currentConfig.ip4_address <> "" then
     ' We already have an IP addr
     receivedIpAddr = true
-    print "=== BS: already have an IP addr: ";currentConfig.ip4_address
+    print "BS: already have an IP addr: ";currentConfig.ip4_address
   end if
+
+  gaa.syslog.SendLine("BS: Running handle events loop")
 
   receivedLoadFinished = false
   while true
     ev = wait(0, gaa.mp)
-    print "=== BS: Received event ";type(ev)
+    print "BS: Received event ";type(ev)
     if type(ev) = "roNetworkAttached" then
-      print "=== BS: Received roNetworkAttached"
+      print "BS: Received roNetworkAttached"
       receivedIpAddr = true
     else if type(ev) = "roHtmlWidgetEvent" then
       eventData = ev.GetData()
       if type(eventData) = "roAssociativeArray" and type(eventData.reason) = "roString" then
         if eventData.reason = "load-error" then
-          print "=== BS: HTML load error: "; eventData.message
+          print "BS: HTML load error: "; eventData.message
         else if eventData.reason = "load-finished" then
-          print "=== BS: Received load finished"
+          print "BS: Received load finished"
           receivedLoadFinished = true
         else if eventData.reason = "message" then
           ' To use this: msgPort.PostBSMessage({text: "my message"});
               'm.logFile.SendLine(eventData.message.text)
               'm.logFile.AsyncFlush()
           if eventData.message.msgtype = "loadurl" then
-            print "=== BS: Loading URL: "; eventData.message.url
+            print "BS: Loading URL: "; eventData.message.url
             loadResult = gaa.htmlWidget.SetURL(eventData.message.url)
-            print "=== BS: Load result: "; loadResult
+            print "BS: Load result: "; loadResult
           else if eventData.message.msgtype = "reboot" then
-            print "=== BS: Rebooting player"
+            print "BS: Rebooting player"
             RebootSystem()
           endif
         endif
       else
-        print "=== BS: Unknown eventData: "; type(eventData)
+        print "BS: Unknown eventData: "; type(eventData)
       endif
     else if type(ev) = "roGpioButton" then
       if ev.GetInt() = 12 then stop
     else if type(ev) = "roTimerEvent" then
-      print "=== BS: Timer Event at "; Uptime(0)
-      print "=== BS: User Data:"; ev.GetUserData()
+      print "BS: Timer Event at "; Uptime(0)
+      print "BS: User Data:"; ev.GetUserData()
       ' Saving screenshot
       screenshotIsSaved = gaa.vm.Screenshot({
         filename: "SD:/screenshot.jpeg"
@@ -233,16 +256,16 @@ Sub HandleEvents()
         async: 0
       })
       if screenshotIsSaved
-        print "=== BS: Screenshot has been saved"
+        print "BS: Screenshot has been saved"
       else
-        print "=== BS: Error saving screenshot"
+        print "BS: Error saving screenshot"
       end if
       ' Sending screenshot
-      print "=== BS: Sending screenshot for playerId="; gaa.config.id
+      print "BS: Sending screenshot for playerId="; gaa.config.id
       ut = CreateObject("roUrlTransfer")
       ut.SetUrl("http://" + gaa.config.logServerUri + "/log-data/android/screenshot/" + gaa.config.id)
       statusCode = ut.PutFromFile("/screenshot.jpeg")
-      print "=== BS: Screenshot sent: "; statusCode
+      print "BS: Screenshot sent: "; statusCode
       gaa.screenshotTimer.Start()
       ' Sending system log
       st = CreateObject("roSystemTime")
@@ -280,12 +303,12 @@ Sub HandleEvents()
       payload = FormatJson(logData, 0)
       print payload
       statusCode = ut.PutFromString(payload)
-      print "=== BS: System log sent: "; statusCode
+      print "BS: System log sent: "; statusCode
     else
-      print "=== BS: Unhandled event: "; type(ev)
+      print "BS: Unhandled event: "; type(ev)
     end if
     if receivedIpAddr and receivedLoadFinished then
-      print "=== BS: OK to show HTML, showing widget now"
+      print "BS: OK to show HTML, showing widget now"
       gaa.htmlWidget.Show()
       gaa.nodeWidget.Show()
       gaa.htmlWidget.PostJSMessage({msgtype:"htmlloaded"})
