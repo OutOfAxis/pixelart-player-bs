@@ -56,19 +56,31 @@ async function postNewFile({ commandId, fileId, sourcePath, webSocket }) {
   await fileHandler.downloadFile(fileId, sourcePath);
   const transferredFileStats = await fileHandler.getFileDetails(config.CONTENT_ADDRESS + fileId);
 
-  webSocket.send(responseService.fileDownloadedResponse(commandId, fileId, transferredFileStats.transferredSize));
+  webSocket.send(responseService.fileDownloadedResponse(commandId, fileId, transferredFileStats.transferredSize), function(error) {
+    if (error) {
+      console.log(error);
+    }
+  });
 }
 
 async function getFiles({ commandId, webSocket }) {
   const content = await fileHandler.getResourcesDetails();
 
-  webSocket.send(responseService.getFilesResponse(commandId, content));
+  webSocket.send(responseService.getFilesResponse(commandId, content), function(error) {
+    if (error) {
+      console.log(error);
+    }
+  });
 }
 
 async function deleteFile({ commandId, fileId, webSocket }) {
   await fileHandler.deleteFile(path.join(config.CONTENT_ADDRESS, fileId));
 
-  webSocket.send(responseService.commandAckResponse(commandId));
+  webSocket.send(responseService.commandAckResponse(commandId), function(error) {
+    if (error) {
+      console.log(error);
+    }
+  });
 }
 
 function getFileById({ commandId, fileId, uploadPath, webSocket }) {
@@ -81,31 +93,50 @@ function getFileByPath({ commandId, localPath, uploadPath, webSocket }) {
 
 async function postNewPlaylist({ commandId, playList, webSocket }) {
   await fileHandler.createNewFile(config.PLAYLIST_ADDRESS, playList);
-
-  webSocket.send(responseService.commandAckResponse(commandId));
+  webSocket.send(responseService.commandAckResponse(commandId), function(error) {
+    if (error) {
+      console.log(error);
+    }
+  });
 }
 
 async function getPlaylist({ commandId, webSocket }) {
   const playList = await fileHandler.getFileContent(config.PLAYLIST_ADDRESS);
 
-  webSocket.send(responseService.playerPlayListResponse(commandId, playList));
+  webSocket.send(responseService.playerPlayListResponse(commandId, playList), function(error) {
+    if (error) {
+      console.log(error);
+    }
+  });
 }
 
 async function setDefaultContent({ commandId, uri, webSocket }) {
   await databaseService.updateConfiguration(`defaultContent`, uri);
 
-  webSocket.send(responseService.commandAckResponse(commandId));
+  webSocket.send(responseService.commandAckResponse(commandId), function(error) {
+    if (error) {
+      console.log(error);
+    }
+  });
 }
 
 async function playDefault({ commandId, webSocket }) {
   const configuration = await databaseService.getConfiguration();
   sendBrightSignMessage(configuration.defaultContent);
 
-  webSocket.send(responseService.commandAckResponse(commandId));
+  webSocket.send(responseService.commandAckResponse(commandId), function(error) {
+    if (error) {
+      console.log(error);
+    }
+  });
 }
 
 function setRecoverContent({ commandId, uri, webSocket }) {
-  webSocket.send(responseService.unknownMessage(uri, commandId));
+  webSocket.send(responseService.unknownMessage(uri, commandId), function(error) {
+    if (error) {
+      console.log(error);
+    }
+  });
 }
 
 function unknownMessage(type, { commandId, webSocket }) {

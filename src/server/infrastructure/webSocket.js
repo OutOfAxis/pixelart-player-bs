@@ -20,6 +20,10 @@ async function establishConnectionWithWebSocket() {
     console.log('Connection to WebSocket has been established.');
   });
 
+  ws.on('connection', function open() {
+    console.log('connectged');
+  });
+
   ws.on('message', function incoming(data) {
     if (data) {
       messagingService.handleMessage(data, ws);
@@ -32,8 +36,12 @@ async function establishConnectionWithWebSocket() {
   });
 
   setTimeout(function timeout() {
-    ws.send();
-  }, 5000);
+    ws.send(null, function(error) {
+      if (error) {
+        establishConnectionWithWebSocket();
+      }
+    });
+  }, 500);
 }
 
 module.exports = {
