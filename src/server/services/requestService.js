@@ -5,6 +5,8 @@ const databaseService = require('./databaseService');
 const errorService = require('./requestErrorService');
 const config = require('../utils/config');
 
+const bsMessage = new BSMessagePort();
+
 function handleMessage(content, webSocket) {
   const message = JSON.parse(content);
   const messageName = Object.getOwnPropertyNames(message)[0];
@@ -122,7 +124,7 @@ async function setDefaultContent({ commandId, uri, webSocket }) {
 
 async function playDefault({ commandId, webSocket }) {
   const configuration = await databaseService.getConfiguration();
-  sendBrightSignMessage(configuration.defaultContent);
+  sendBrightSignMessage('loadurl', { url: configuration.defaultContent });
 
   webSocket.send(responseService.commandAckResponse(commandId), function(error) {
     if (error) {
@@ -185,10 +187,13 @@ function reboot({ commandId, webSocket }) {
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
-function sendBrightSignMessage(message) {
-  const bsMessage = new BSMessagePort();
+function sendBrightSignMessage(msgtype, payload = {}) {
+  const message = Object.assign({}, payload, { msgtype });
 
-  bsMessage.PostBSMessage({ complete: true, result: message });
+  console.log(`Sending message to BrightScript: ${ JSON.stringify(message) }`);
+  if (!bsMessage.PostBSMessage(message)) {
+    console.error('PostBSMessage() failed');
+  }
 }
 
 module.exports = {

@@ -174,6 +174,7 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
   'end new
 
   ga.nodeWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
+  ga.nodeWidget.SetPort(ga.mp)
   ga.nodeWidget.Show()
 
   rect=CreateObject("roRectangle", 0, 0, width, height)
@@ -217,13 +218,16 @@ Sub HandleEvents()
   receivedLoadFinished = false
   while true
     ev = wait(0, gaa.mp)
-    print "BS: Received event ";type(ev)
+    ' print "BS: Received event ";type(ev)
+    ' print "BS: Event data ";ev.GetData()
+    gaa.syslog.SendLine("BS: Received event: " + type(ev))
     if type(ev) = "roNetworkAttached" then
       print "BS: Received roNetworkAttached"
       receivedIpAddr = true
     else if type(ev) = "roHtmlWidgetEvent" then
       eventData = ev.GetData()
       if type(eventData) = "roAssociativeArray" and type(eventData.reason) = "roString" then
+        gaa.syslog.SendLine("BS: Event data: " + FormatJson(ev.GetData(), 0))
         if eventData.reason = "load-error" then
           print "BS: HTML load error: "; eventData.message
         else if eventData.reason = "load-finished" then
