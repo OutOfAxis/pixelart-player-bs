@@ -31,7 +31,8 @@ Sub Main(args)
 
   DoCanonicalInit()
 
-  CreateHtmlWidget(url$, contentUrl$)
+  CreateNodeWidget(url$)
+  CreateHtmlWidget(contentUrl$)
 
   HandleEvents()
 End Sub
@@ -39,7 +40,7 @@ Function DoCanonicalInit()
 
   gaa =  GetGlobalAA()
   gaa.syslog = CreateObject("roSystemLog")
-  
+
   gaa.syslog.SendLine("BS: Start Initialization")
 
   EnableZoneSupport(1)
@@ -142,19 +143,14 @@ Function FormatDateTime(dt)
   End Function
   Return dt.GetYear().ToStr() + "-" + pad(strI(dt.GetMonth())) + "-" + pad(strI(dt.GetDay())) + "T" + pad(strI(dt.GetHour())) + ":" + pad(strI(dt.GetMinute())) + ":" + pad(strI(dt.GetSecond())) + "+04:00"
 End Function
-Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
+Sub CreateNodeWidget(url$ as String)
 
   ga =  GetGlobalAA()
   width=ga.vm.GetResX()
   height=ga.vm.GetResY()
   rect=CreateObject("roRectangle", 0, 0, width, height)
 
-  ga.syslog.SendLine("BS: Creating HTML Widgets")
-
-  ' set proper orientation
-  transform = "identity"
-  if ga.config.orientation = "90" then transform = "rot90"
-  if ga.config.orientation = "270" then transform = "rot270"
+  ga.syslog.SendLine("BS: Creating Node Widget")
 
   'new node 5-16-17
   is = {
@@ -166,7 +162,6 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
     brightsign_js_objects_enabled: true
     focus_enabled: true
     javascript_enabled: true
-    hwz_default: "on"
     url: url$
     storage_path: "SD:"
     storage_quota: 1073741824
@@ -176,6 +171,24 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
   ga.nodeWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
   ga.nodeWidget.SetPort(ga.mp)
   ga.nodeWidget.Show()
+
+End Sub
+Sub CreateHtmlWidget(url$ as String)
+
+  ga =  GetGlobalAA()
+  width=ga.vm.GetResX()
+  height=ga.vm.GetResY()
+
+  ga.syslog.SendLine("BS: Creating HTML Widget")
+
+  if ga.htmlWidget <> invalid then
+    ga.htmlWidget.Hide()
+  endif
+
+  ' set proper orientation
+  transform = "identity"
+  if ga.config.orientation = "90" then transform = "rot90"
+  if ga.config.orientation = "270" then transform = "rot270"
 
   rect=CreateObject("roRectangle", 0, 0, width, height)
 
@@ -190,7 +203,7 @@ Sub CreateHtmlWidget(url$ as String, contentUrl$ as String)
     focus_enabled: true
     javascript_enabled: true
     hwz_default: "on"
-    url: contentUrl$
+    url: url$
     transform: transform
     storage_path: "SD:"
     storage_quota: 1073741824
@@ -210,7 +223,7 @@ Sub HandleEvents()
   if currentConfig.ip4_address <> "" then
     ' We already have an IP addr
     receivedIpAddr = true
-    print "BS: already have an IP addr: ";currentConfig.ip4_address
+    gaa.syslog.SendLine("BS: already have an IP addr: "+currentConfig.ip4_address)
   end if
 
   gaa.syslog.SendLine("BS: Running handle events loop")
@@ -222,27 +235,26 @@ Sub HandleEvents()
     ' print "BS: Event data ";ev.GetData()
     gaa.syslog.SendLine("BS: Received event: " + type(ev))
     if type(ev) = "roNetworkAttached" then
-      print "BS: Received roNetworkAttached"
+      gaa.syslog.SendLine("BS: Received roNetworkAttached")
       receivedIpAddr = true
     else if type(ev) = "roHtmlWidgetEvent" then
       eventData = ev.GetData()
       if type(eventData) = "roAssociativeArray" and type(eventData.reason) = "roString" then
         gaa.syslog.SendLine("BS: Event data: " + FormatJson(ev.GetData(), 0))
         if eventData.reason = "load-error" then
-          print "BS: HTML load error: "; eventData.message
+          gaa.syslog.SendLine("BS: HTML load error: " + eventData.message)
         else if eventData.reason = "load-finished" then
-          print "BS: Received load finished"
+          gaa.syslog.SendLine("BS: Received load finished")
           receivedLoadFinished = true
         else if eventData.reason = "message" then
           ' To use this: msgPort.PostBSMessage({text: "my message"});
               'm.logFile.SendLine(eventData.message.text)
               'm.logFile.AsyncFlush()
           if eventData.message.msgtype = "loadurl" then
-            print "BS: Loading URL: "; eventData.message.url
-            loadResult = gaa.htmlWidget.SetURL(eventData.message.url)
-            print "BS: Load result: "; loadResult
+            gaa.syslog.SendLine("BS: Loading URL: " + eventData.message.url)
+            CreateHtmlWidget(eventData.message.url)
           else if eventData.message.msgtype = "reboot" then
-            print "BS: Rebooting player"
+            gaa.syslog.SendLine("BS: Rebooting player")
             RebootSystem()
           endif
         endif
@@ -312,10 +324,10 @@ Sub HandleEvents()
       statusCode = ut.PutFromString(payload)
       print "BS: System log sent: "; statusCode
     else
-      print "BS: Unhandled event: "; type(ev)
+      gaa.syslog.SendLine("BS: Unhandled event: " + type(ev))
     end if
     if receivedIpAddr and receivedLoadFinished then
-      print "BS: OK to show HTML, showing widget now"
+      gaa.syslog.SendLine("BS: OK to show HTML, showing widget now")
       gaa.htmlWidget.Show()
       gaa.nodeWidget.Show()
       gaa.htmlWidget.PostJSMessage({msgtype:"htmlloaded"})

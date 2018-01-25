@@ -1,4 +1,5 @@
 const path = require('path');
+const url = require('url');
 const fileHandler = require('../utils/fileHandler');
 const responseService = require('./responseService');
 const databaseService = require('./databaseService');
@@ -113,6 +114,7 @@ async function getPlaylist({ commandId, webSocket }) {
 }
 
 async function setDefaultContent({ commandId, uri, webSocket }) {
+  uri = url.parse(uri).protocol ? uri : config.DEFAULT_CONTENT;
   await databaseService.updateConfiguration(`defaultContent`, uri);
 
   webSocket.send(responseService.commandAckResponse(commandId), function(error) {
