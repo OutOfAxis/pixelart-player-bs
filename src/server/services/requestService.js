@@ -156,6 +156,8 @@ async function updatePassword({ newPassword, commandId, webSocket }) {
 async function updateOrientation({ orientation, commandId, webSocket }) {
   await databaseService.updateConfiguration('orientation', orientation);
 
+  sendBrightSignMessage('orientationChanged', { orientation });
+
   webSocket.send(responseService.commandAckResponse(commandId));
 }
 
