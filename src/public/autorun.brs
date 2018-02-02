@@ -1,7 +1,6 @@
 'no local storage
 Sub Main(args)
  print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SCRIPTS STARTS HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-  contentUrl$ = "file:///content/index.html"
   url$ = "file:///index.html"
 
   'url$ = "http://www.mysitehere.com" disabled
@@ -32,9 +31,20 @@ Sub Main(args)
   DoCanonicalInit()
 
   CreateNodeWidget(url$)
-  CreateHtmlWidget(contentUrl$)
+  DefaultHtmlWidget()
 
   HandleEvents()
+End Sub
+Sub ReloadConfig()
+  gaa = GetGlobalAA()
+  gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
+  if type(gaa.syslog) = "roSystemLog" then
+    gaa.syslog.SendLine("BS: BSPlayer configuration loaded")
+  endif
+End Sub
+Sub DefaultHtmlWidget()
+  contentUrl$ = "file:///content/index.html"
+  CreateHtmlWidget(contentUrl$)
 End Sub
 Function DoCanonicalInit()
 
@@ -62,9 +72,7 @@ Function DoCanonicalInit()
   gaa.hp.setPort(gaa.mp)
 
   ' Load BS Player configuration
-  gaa.config = ParseJson(ReadAsciiFile("/bs-player-config.json"))
-
-  gaa.syslog.SendLine("BS: BSPlayer configuration loaded")
+  ReloadConfig()
 
   sysTime = CreateObject("roSystemTime")
   sysTime.SetTimeZone("GMT+4")
@@ -173,6 +181,12 @@ Sub CreateNodeWidget(url$ as String)
   ga.nodeWidget.Show()
 
 End Sub
+Function OrientationToTransform(orientation as String)
+  transform = "identity"
+  if orientation = "90" then transform = "rot90"
+  if orientation = "270" then transform = "rot270"
+  Return transform
+End Function
 Sub CreateHtmlWidget(url$ as String)
 
   ga =  GetGlobalAA()
@@ -185,14 +199,10 @@ Sub CreateHtmlWidget(url$ as String)
     ga.htmlWidget.Hide()
   endif
 
-  ' set proper orientation
-  transform = "identity"
-  if ga.config.orientation = "90" then transform = "rot90"
-  if ga.config.orientation = "270" then transform = "rot270"
-
   rect=CreateObject("roRectangle", 0, 0, width, height)
 
   'new node 5-16-17
+  transform = OrientationToTransform(ga.config.orientation)
   is = {
       port: 2999
   }
@@ -212,6 +222,10 @@ Sub CreateHtmlWidget(url$ as String)
 
   ga.htmlWidget = CreateObject("roHtmlWidget", rect, config)	'new added config object after rect 5-16-17
   ga.htmlWidget.Show()
+
+  if type(ga.syslog) = "roSystemLog" then
+    ga.syslog.SendLine("BS: HTML widget loaded: " + url$)
+  endif
 
 End Sub
 Sub HandleEvents()
@@ -253,6 +267,10 @@ Sub HandleEvents()
           if eventData.message.msgtype = "loadurl" then
             gaa.syslog.SendLine("BS: Loading URL: " + eventData.message.url)
             CreateHtmlWidget(eventData.message.url)
+          else if eventData.message.msgtype = "orientationChanged" then
+            gaa.syslog.SendLine("BS: Updating orientation")
+            ReloadConfig()
+            DefaultHtmlWidget()
           else if eventData.message.msgtype = "reboot" then
             gaa.syslog.SendLine("BS: Rebooting player")
             RebootSystem()
