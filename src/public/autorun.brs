@@ -66,7 +66,7 @@ Function DoCanonicalInit()
   gaa.gpioPort.SetPort(gaa.mp)
 
   gaa.vm = CreateObject("roVideoMode")
-  gaa.vm.setMode("auto")
+  gaa.vm.setMode("1920x1080x30p")
 
   gaa.hp = CreateObject("roNetworkHotplug")
   gaa.hp.setPort(gaa.mp)
