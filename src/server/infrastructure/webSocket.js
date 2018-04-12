@@ -6,10 +6,10 @@ const encryption = require('../utils/encryption');
 const WebSocket = require('ws');
 
 async function establishConnectionWithWebSocket() {
-  const configuration = await databaseService.getConfiguration();
+  let configuration = await databaseService.getConfiguration();
   const url = await communication.getWebSocketAddress(configuration.serverUri, configuration.id);
   const authorizationToken = `${configuration.id}:${configuration.password}`;
-  const ws = new WebSocket(url, {
+  let ws = new WebSocket(url, {
     perMessageDeflate: false,
     headers: {
       Authorization: `Basic ${encryption.encode(authorizationToken)}`,
@@ -61,7 +61,9 @@ async function establishConnectionWithWebSocket() {
   ws.on('close', function close(code, reason) {
     console.log(`Disconnected (${ reason }), trying establish new connection`);
     clearInterval(pingerIntervalId);
-    establishConnectionWithWebSocket();
+    configuration = null;
+    ws = null;
+    setTimeout(establishConnectionWithWebSocket, 1000);
   });
 
 
