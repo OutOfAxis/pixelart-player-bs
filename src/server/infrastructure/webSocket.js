@@ -41,11 +41,11 @@ async function establishConnectionWithWebSocket() {
   });
 
   ws.on('ping', function ping() {
-    console.log('Ping received');
+    // console.log('Ping received');
   });
 
   ws.on('pong', function pong() {
-    console.log('Pong received');
+    // console.log('Pong received');
   });
 
   ws.on('error', function error(err) {
