@@ -77,7 +77,7 @@ async function getFiles({ commandId, webSocket }) {
 }
 
 async function deleteFile({ commandId, fileId, webSocket }) {
-  await fileHandler.deleteFile(path.join(config.CONTENT_ADDRESS, fileId));
+  await fileHandler.deleteFile(fileId.charAt(0) === '/' ? fileId : path.join(config.CONTENT_ADDRESS, fileId));
 
   webSocket.send(responseService.commandAckResponse(commandId), function(error) {
     if (error) {
