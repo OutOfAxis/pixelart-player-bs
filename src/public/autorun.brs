@@ -231,8 +231,12 @@ End Sub
 Sub HandleEvents()
 
   gaa =  GetGlobalAA()
-  receivedIpAddr = false
+
+  di = CreateObject("roDeviceInfo")
+  si = CreateObject("roStorageInfo", "SD:")
   nc = CreateObject("roNetworkConfiguration", 0)
+
+  receivedIpAddr = false
   currentConfig = nc.GetCurrentConfig()
   if currentConfig.ip4_address <> "" then
     ' We already have an IP addr
@@ -287,8 +291,8 @@ Sub HandleEvents()
       ' Saving screenshot
       screenshotIsSaved = gaa.vm.Screenshot({
         filename: "SD:/screenshot.jpeg"
-        width: gaa.vm.GetOutputResX()
-        height: gaa.vm.GetOutputResY()
+        width: 320
+        height: 200
         filetype: "JPEG"
         async: 0
       })
@@ -303,15 +307,11 @@ Sub HandleEvents()
       ut.SetUrl("http://" + gaa.config.logServerUri + "/log-data/android/screenshot/" + gaa.config.id)
       statusCode = ut.PutFromFile("/screenshot.jpeg")
       print "BS: Screenshot sent: "; statusCode
-      gaa.screenshotTimer.Start()
       ' Sending system log
-      st = CreateObject("roSystemTime")
-      di = CreateObject("roDeviceInfo")
-      si = CreateObject("roStorageInfo", "SD:")
-      nc = CreateObject("roNetworkConfiguration", 0)
       ut = CreateObject("roUrlTransfer")
       ut.SetUrl("http://" + gaa.config.logServerUri + "/log-data/android/system-report")
       ut.AddHeader("Content-Type", "application/json")
+      st = CreateObject("roSystemTime")
       lastOnline = CreateObject("roDateTime")
       systemStartTime = CreateObject("roDateTime")
       loadavg = di.GetLoadStatistics({item:"loadavg"})
@@ -341,6 +341,12 @@ Sub HandleEvents()
       print payload
       statusCode = ut.PutFromString(payload)
       print "BS: System log sent: "; statusCode
+      print "BS: Cleaning up memory"
+      ut = invalid
+      netconf = invalid
+      logData = invalid
+      RunGarbageCollector()
+      gaa.screenshotTimer.Start()
     else
       gaa.syslog.SendLine("BS: Unhandled event: " + type(ev))
     end if
