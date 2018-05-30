@@ -15,7 +15,8 @@ async function establishConnectionWithWebSocket() {
       Authorization: `Basic ${encryption.encode(authorizationToken)}`,
     },
   });
-  let pingerIntervalId = null;
+  let pingCheckerIntervalId = null;
+  let lastPing = null;
 
   ws.on('open', function open() {
     console.log('Connection to WebSocket has been established.');
@@ -28,6 +29,13 @@ async function establishConnectionWithWebSocket() {
     //     }
     //   });
     // }, 5000);
+
+    pingCheckerIntervalId = setInterval(function() {
+      if (lastPing && lastPing < new Date().valueOf() - 5000) {
+        console.error(`No ping received in the last 5sec, closing connection`);
+        ws.terminate();
+      }
+    }, 5000);
   });
 
   ws.on('connection', function open() {
@@ -41,7 +49,8 @@ async function establishConnectionWithWebSocket() {
   });
 
   ws.on('ping', function ping() {
-    // console.log('Ping received');
+    console.log('Ping received');
+    lastPing = new Date().valueOf();
   });
 
   ws.on('pong', function pong() {
@@ -60,7 +69,7 @@ async function establishConnectionWithWebSocket() {
 
   ws.on('close', function close(code, reason) {
     console.log(`Disconnected (${ reason }), trying establish new connection`);
-    clearInterval(pingerIntervalId);
+    clearInterval(pingCheckerIntervalId);
     configuration = null;
     ws = null;
     setTimeout(establishConnectionWithWebSocket, 1000);
