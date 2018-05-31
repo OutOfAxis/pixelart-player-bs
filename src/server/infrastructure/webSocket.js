@@ -49,7 +49,7 @@ async function establishConnectionWithWebSocket() {
   });
 
   ws.on('ping', function ping() {
-    console.log('Ping received');
+    // console.log('Ping received');
     lastPing = new Date().valueOf();
   });
 
