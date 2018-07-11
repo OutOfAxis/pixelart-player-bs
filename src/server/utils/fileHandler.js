@@ -18,6 +18,12 @@ async function downloadFile(fileId, sourcePath) {
       reject(err.message);
     });
 
+    sendReq.on('response', function (resp) {
+      if (resp.statusCode >= 400) {
+        this.emit('error', { message: `The server responded with ${ resp.statusCode }` });
+      }
+    });
+
     sendReq.pipe(file);
 
     file.on('finish', function() {
