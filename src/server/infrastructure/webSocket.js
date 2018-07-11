@@ -19,7 +19,7 @@ async function establishConnectionWithWebSocket() {
   let lastPing = null;
 
   ws.on('open', function open() {
-    console.log('Connection to WebSocket has been established.');
+    console.log('WS: Connection to server has been established.');
 
     // pingerIntervalId = setInterval(function timeout() {
     //   ws.ping(function(error) {
@@ -31,48 +31,52 @@ async function establishConnectionWithWebSocket() {
     // }, 5000);
 
     pingCheckerIntervalId = setInterval(function() {
+      console.log(`WS: lastPing=${ lastPing } readyState=${ ws.readyState }`);
       if (lastPing && lastPing < new Date().valueOf() - 5000) {
-        console.error(`No ping received in the last 5sec, closing connection`);
-        ws.terminate();
+        console.error(`WS: No ping received in the last 5sec, closing connection`);
+        ws.close();
       }
     }, 5000);
   });
 
   ws.on('connection', function open() {
-    console.log('connected');
+    console.log('WS: connected');
   });
 
   ws.on('message', function incoming(data) {
+    console.log(`WS: Message received: ${ JSON.stringify(data) }`);
     if (data) {
       messagingService.handleMessage(data, ws);
     }
   });
 
   ws.on('ping', function ping() {
-    // console.log('Ping received');
+    console.log('WS: Ping received');
     lastPing = new Date().valueOf();
   });
 
   ws.on('pong', function pong() {
-    // console.log('Pong received');
+    console.log('WS: Pong received');
   });
 
   ws.on('error', function error(err) {
-    console.error(`WebSocket communication error: ${ err }`);
-    ws.terminate();
+    console.error(`WS: Communication error: ${ err }`);
+    // ws.terminate();
   });
 
   ws.on('unexpected-response', function unexpectedResponse(req, res) {
-    console.error(`Unexpected response from server: ${ res }`);
-    ws.terminate();
+    console.error(`WS: Unexpected response from server: ${ res }`);
+    console.dir(req);
+    console.dir(res);
+    // ws.terminate();
   });
 
   ws.on('close', function close(code, reason) {
-    console.log(`Disconnected (${ reason }), trying establish new connection`);
+    console.log(`WS: Disconnected (${ code }): ${ reason }, trying establish new connection`);
     clearInterval(pingCheckerIntervalId);
     configuration = null;
-    ws = null;
-    setTimeout(establishConnectionWithWebSocket, 1000);
+    // ws = null;
+    setTimeout(establishConnectionWithWebSocket, 31000);
   });
 
 
