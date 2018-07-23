@@ -14,7 +14,8 @@ async function downloadFile(fileId, sourcePath) {
     const sendReq = request.get(sourcePath);
 
     sendReq.on('error', function(err) {
-      fs.unlink(sourcePath);
+      file.destroy();
+      fs.unlink(filePath);
       reject(err.message);
     });
 
@@ -31,7 +32,8 @@ async function downloadFile(fileId, sourcePath) {
     });
 
     file.on('error', function(err) {
-      fs.unlink(sourcePath);
+      file.destroy();
+      fs.unlink(filePath);
       reject(err.message);
     });
   });
