@@ -333,8 +333,8 @@ Sub HandleEvents()
       logData["totalCapacity"] = si.GetSizeInMegabytes()
       logData["totalFreeSpace"] = si.GetFreeInMegabytes()
       logData["cpuUsage"] = strI(cpuload).Trim() + "%"
-      logData["memoryTotal"] = val(memusage[1])
-      logData["memoryUsed"] = val(memusage[1]) - val(memusage[2])
+      logData["memoryTotal"] = 0
+      logData["memoryUsed"] = 0
       logData["ipAddress"] = netconf.ip4_address
       logData["lastOnline"] = FormatDateTime(lastOnline)
       payload = FormatJson(logData, 0)
