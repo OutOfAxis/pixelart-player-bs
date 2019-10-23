@@ -16,7 +16,7 @@ async function establishConnectionWithWebSocket() {
     },
   });
   let pingCheckerIntervalId = null;
-  let lastPing = null;
+  let lastPing = new Date().valueOf();
 
   ws.on('open', function open() {
     console.log('WS: Connection to server has been established.');
