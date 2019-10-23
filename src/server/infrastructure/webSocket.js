@@ -32,8 +32,8 @@ async function establishConnectionWithWebSocket() {
 
     pingCheckerIntervalId = setInterval(function() {
       console.log(`WS: lastPing=${ lastPing } readyState=${ ws.readyState }`);
-      if (lastPing && lastPing < new Date().valueOf() - 5000) {
-        console.error(`WS: No ping received in the last 5sec, closing connection`);
+      if (lastPing && lastPing < new Date().valueOf() - 15000) {
+        console.error(`WS: No ping received in the last 15sec, closing connection`);
         ws.close();
       }
     }, 5000);
@@ -45,6 +45,7 @@ async function establishConnectionWithWebSocket() {
 
   ws.on('message', function incoming(data) {
     console.log(`WS: Message received: ${ JSON.stringify(data) }`);
+    lastPing = new Date().valueOf();
     if (data) {
       messagingService.handleMessage(data, ws);
     }
